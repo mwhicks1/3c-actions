@@ -5,11 +5,17 @@ on:
   schedule:
     - cron: "0 7 * * *"
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch of correctcomputation/checkedc-clang to run workflow on"
+        required: true
+        default: "main"
 
 env:
   benchmark_tar_dir: "/home/github/checkedc-benchmarks"
   builddir: "${{github.workspace}}/b/ninja"
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
+  branch_for_scheduled_run: "main"
 
 jobs:
 
@@ -36,6 +42,9 @@ jobs:
       - name: Checkout our repository
         run: |
           git clone --depth 1 https://github.com/correctcomputation/checkedc-clang ${{github.workspace}}/depsfolder/checkedc-clang
+          cd ${{github.workspace}}/depsfolder/checkedc-clang
+          git fetch --depth 1 origin "${{ github.event.inputs.branch || env.branch_for_scheduled_run }}"
+          git checkout FETCH_HEAD
           git clone --depth 1 https://github.com/microsoft/checkedc ${{github.workspace}}/depsfolder/checkedc-clang/llvm/projects/checkedc-wrapper/checkedc
 
       - name: Build 3c
