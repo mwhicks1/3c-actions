@@ -41,8 +41,9 @@ jobs:
     steps:
       - name: Checkout our repository
         run: |
-          git clone --depth 1 https://github.com/correctcomputation/checkedc-clang ${{github.workspace}}/depsfolder/checkedc-clang
+          git init ${{github.workspace}}/depsfolder/checkedc-clang
           cd ${{github.workspace}}/depsfolder/checkedc-clang
+          git remote add origin https://github.com/correctcomputation/checkedc-clang
           git fetch --depth 1 origin "${{ github.event.inputs.branch || env.branch_for_scheduled_run }}"
           git checkout FETCH_HEAD
           git clone --depth 1 https://github.com/microsoft/checkedc ${{github.workspace}}/depsfolder/checkedc-clang/llvm/projects/checkedc-wrapper/checkedc
