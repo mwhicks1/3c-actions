@@ -35,7 +35,7 @@ jobs:
 
   # Clone and build 3C
   build_3c:
-    name: Build 3C
+    name: "Build 3C (${{ github.event.inputs.branch || env.branch_for_scheduled_run }})"
     needs: clean
     runs-on: self-hosted
     steps:
