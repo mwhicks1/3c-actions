@@ -35,10 +35,12 @@ jobs:
 
   # Clone and build 3C
   build_3c:
-    name: "Build 3C (${{ github.event.inputs.branch || env.branch_for_scheduled_run }})"
+    name: Build 3C
     needs: clean
     runs-on: self-hosted
     steps:
+      - name: Branch or commit ID
+        run: echo "${{ github.event.inputs.branch || env.branch_for_scheduled_run }}"
       - name: Checkout our repository
         run: |
           git init ${{github.workspace}}/depsfolder/checkedc-clang
