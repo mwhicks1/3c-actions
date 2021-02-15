@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "Branch of correctcomputation/checkedc-clang to run workflow on"
+        description: "Branch or commit ID of correctcomputation/checkedc-clang to run workflow on"
         required: true
         default: "main"
 
