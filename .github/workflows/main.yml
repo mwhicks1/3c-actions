@@ -1,4 +1,4 @@
-name: Nightly Sanity Tests
+name: 3C benchmark tests
 
 on:
   # Run every day at 3:00 AM EDT (i.e., 7 am UTC)
@@ -35,9 +35,10 @@ jobs:
           rm -rf ${{github.workspace}}/depsfolder
           mkdir -p ${{github.workspace}}/depsfolder
 
-  # Clone and build 3C
+  # Clone and build 3c and clang
+  # (clang is needed to test compilation of converted benchmarks.)
   build_3c:
-    name: Build 3C
+    name: Build 3c and clang
     needs: clean
     runs-on: self-hosted
     steps:
@@ -52,7 +53,7 @@ jobs:
           git checkout FETCH_HEAD
           git clone --depth 1 https://github.com/microsoft/checkedc ${{github.workspace}}/depsfolder/checkedc-clang/llvm/projects/checkedc-wrapper/checkedc
 
-      - name: Build 3c
+      - name: Build 3c and clang
         run: |
           cd ${{env.builddir}}
           cmake -G Ninja \
@@ -62,127 +63,283 @@ jobs:
             -DLLVM_USE_SPLIT_DWARF=ON \
             -DLLVM_ENABLE_PROJECTS="clang" \
             ${{github.workspace}}/depsfolder/checkedc-clang/llvm
-          ninja 3c clang
+          # -l 36: Try not to overload gamera. Hopefully this will use all 36
+          # hyperthreads when nothing else is running and automatically scale
+          # back when other jobs are running. TODO: Better solution?
+          ninja -l 36 3c clang
           chmod -R 777 ${{github.workspace}}/depsfolder
           chmod -R 777 ${{env.builddir}}
 
   # Run Test for 3C
   test_3c:
-    name: Test 3C
+    name: 3C regression tests
     needs: build_3c
     runs-on: self-hosted
     steps:
-      - name: 3C tests
+      - name: 3C regression tests
         run: |
           cd ${{env.builddir}}
           ninja check-3c
 
-  # Convert out benchmark programs
-  test_vsftpd:
-    name: Test Vsfptd
+  # Convert our benchmark programs
+  test_vsftpd_no_alltypes:
+    name: Test Vsfptd (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build vsftpd
         run: |
-          cd ${{env.benchmark_conv_dir}}
+          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
+          cd ${{env.benchmark_conv_dir}}/no-alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
           cd vsftpd-3.0.3
           bear make
 
       - name: Convert vsftpd
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/vsftpd-3.0.3
+            -pr .
 
-  test_ptrdist:
-    name: Test PtrDist
+      - name: Build converted vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
+          ${{env.port_tools}}/compile_converted_project.sh ${{env.builddir}}/bin/clang
+
+  test_vsftpd_alltypes:
+    name: Test Vsfptd (-alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build vsftpd
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/alltypes
+          cd ${{env.benchmark_conv_dir}}/alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
+          cd vsftpd-3.0.3
+          bear make
+
+      - name: Convert vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3
+          # Python argparse thinks `-extra-3c-arg -alltypes` is two options
+          # rather than an option with an argument.
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+
+      - name: Build converted vsftpd (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3
+          ${{env.port_tools}}/compile_converted_project.sh ${{env.builddir}}/bin/clang || true
+
+  test_ptrdist_no_alltypes:
+    name: Test PtrDist (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build PtrDist
         run: |
-          cd ${{env.benchmark_conv_dir}}
+          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
+          cd ${{env.benchmark_conv_dir}}/no-alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
           done
 
-      - name: Test anagram
+      - name: Convert anagram + build converted
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/ptrdist-1.1/anagram
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Test bc
+      - name: Convert bc + build converted
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/ptrdist-1.1/bc
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Test ft
+      - name: Convert ft + build converted
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/ptrdist-1.1/ft
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Test ks
+      - name: Convert ks + build converted
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/ptrdist-1.1/ks
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Test yacr2
+      - name: Convert yacr2 + build converted
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/ptrdist-1.1/yacr2
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-  test_libarchive:
-    name: Test LibArchive
+  test_ptrdist_alltypes:
+    name: Test PtrDist (-alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build PtrDist
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/alltypes
+          cd ${{env.benchmark_conv_dir}}/alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
+          cd ptrdist-1.1
+          for i in anagram bc ft ks yacr2 ; do \
+            (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
+          done
+
+      - name: Convert anagram + build converted (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert bc + build converted (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert ft + build converted (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert ks + build converted (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert yacr2 + build converted (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+  test_libarchive_no_alltypes:
+    name: Test LibArchive (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build LibArchive
         run: |
-          cd ${{env.benchmark_conv_dir}}
+          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
+          cd ${{env.benchmark_conv_dir}}/no-alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
           cd libarchive-3.4.3
           cd build
           cmake -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
           bear make
 
-      - name: Test LibArchive
+      - name: Convert LibArchive
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3
+          ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/libarchive-3.4.3/build
+            -pr build
 
-  test_lua:
-    name: Test Lua
+      - name: Build converted LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3/build
+          ${{env.port_tools}}/compile_converted_project.sh ${{env.builddir}}/bin/clang
+
+  test_libarchive_alltypes:
+    name: Test LibArchive (-alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibArchive
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/alltypes
+          cd ${{env.benchmark_conv_dir}}/alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
+          cd libarchive-3.4.3
+          cd build
+          cmake -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+          bear make
+
+      - name: Convert LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr build
+
+      - name: Build converted LibArchive (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3/build
+          ${{env.port_tools}}/compile_converted_project.sh ${{env.builddir}}/bin/clang || true
+
+  test_lua_no_alltypes:
+    name: Test Lua (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build Lua
         run: |
-          cd ${{env.benchmark_conv_dir}}
+          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
+          cd ${{env.benchmark_conv_dir}}/no-alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
           bear make linux
@@ -191,22 +348,105 @@ jobs:
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
-      - name: Test Lua
+
+      - name: Convert Lua
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
+          ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/lua-5.4.1
+            -pr .
 
-  test_libtiff:
-    name: Test LibTiff
+      - name: Build converted Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang linux
+
+  test_lua_alltypes:
+    name: Test Lua (-alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Lua
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/alltypes
+          cd ${{env.benchmark_conv_dir}}/alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
+          cd lua-5.4.1
+          bear make linux
+          ( cd src ; \
+            clang-rename-10 -pl -i \
+              --qualified-name=main \
+              --new-name=luac_main \
+              luac.c )
+
+      - name: Convert Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+
+      - name: Build converted Lua (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang linux || true
+
+  test_libtiff_no_alltypes:
+    name: Test LibTiff (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build LibTiff
         run: |
-          cd ${{env.benchmark_conv_dir}}
+          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
+          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
+          cd tiff-4.1.0
+          # Having compile_converted_project.sh pass
+          # CC=${{env.builddir}}/bin/clang to `make` seems to be insufficient to
+          # get it to use the Checked C compiler. (Surprisingly, for the other
+          # CMake-based projects, it seems to be sufficient.) So just configure
+          # the project with the Checked C compiler from the beginning.
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -DCMAKE_C_FLAGS="-w" .
+          bear make tiff
+          ( cd tools ; \
+            for i in *.c ; do \
+              clang-rename-10 -pl -i \
+                --qualified-name=main \
+                --new-name=$(basename -s .c $i)_main $i ; \
+            done)
+
+      - name: Convert LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/tif_stream.cxx' \
+            --skip '.*/test/.*\.c' \
+            --skip '.*/contrib/.*\.c' \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -pr .
+
+      - name: Build converted LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang tiff
+
+  test_libtiff_alltypes:
+    name: Test LibTiff (-alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibTiff
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/alltypes
+          cd ${{env.benchmark_conv_dir}}/alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
           cd tiff-4.1.0
           cmake -DCMAKE_C_FLAGS="-w" .
@@ -217,25 +457,34 @@ jobs:
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
-      - name: Test LibTiff
+
+      - name: Convert LibTiff
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/alltypes/tiff-4.1.0
+          ${{env.port_tools}}/convert_project.py \
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/tiff-4.1.0
+            -extra-3c-arg=-alltypes \
+            -pr .
 
-  test_zlib:
-    name: Test ZLib
+      - name: Build converted LibTiff (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/tiff-4.1.0
+          ${{env.port_tools}}/compile_converted_project.sh \
+            ${{env.builddir}}/bin/clang tiff || true
+
+  test_zlib_no_alltypes:
+    name: Test ZLib (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build ZLib
         run: |
-          cd ${{env.benchmark_conv_dir}}
+          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
+          cd ${{env.benchmark_conv_dir}}/no-alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
           cd zlib-1.2.11
           mkdir build
@@ -243,11 +492,47 @@ jobs:
           cmake -DCMAKE_C_FLAGS="-w" ..
           bear make
 
-      - name: Test zlib
+      - name: Convert zlib
         run: |
-          cd ${{env.port_tools}}
-          python convert_project.py \
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11
+          ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
-            -pr ${{env.benchmark_conv_dir}}/zlib-1.2.11/build
+            -pr build
+
+      - name: Build converted zlib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11/build
+          ${{env.port_tools}}/compile_converted_project.sh ${{env.builddir}}/bin/clang
+
+  test_zlib_alltypes:
+    name: Test ZLib (-alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build ZLib
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/alltypes
+          cd ${{env.benchmark_conv_dir}}/alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
+          cd zlib-1.2.11
+          mkdir build
+          cd build
+          cmake -DCMAKE_C_FLAGS="-w" ..
+          bear make
+
+      - name: Convert zlib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11/build
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/test/.*' \
+            --includeDir ${{env.include_dir}} \
+            -p ${{env.builddir}}/bin/3c \
+            -extra-3c-arg=-alltypes \
+            -pr .
+
+      - name: Build converted zlib (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11/build
+          ${{env.port_tools}}/compile_converted_project.sh ${{env.builddir}}/bin/clang || true
