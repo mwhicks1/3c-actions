@@ -152,53 +152,73 @@ jobs:
             (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
           done
 
-      - name: Convert anagram + build converted
+      - name: Convert anagram
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
             -pr .
+
+      - name: Build converted anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Convert bc + build converted
+      - name: Convert bc
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
             -pr .
+
+      - name: Build converted bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Convert ft + build converted
+      - name: Convert ft
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
             -pr .
+
+      - name: Build converted ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Convert ks + build converted
+      - name: Convert ks
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
             -pr .
+
+      - name: Build converted ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
-      - name: Convert yacr2 + build converted
+      - name: Convert yacr2
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             -p ${{env.builddir}}/bin/3c \
             -pr .
+
+      - name: Build converted yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
@@ -217,7 +237,7 @@ jobs:
             (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
           done
 
-      - name: Convert anagram + build converted (ignore failure)
+      - name: Convert anagram
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
@@ -225,10 +245,14 @@ jobs:
             -p ${{env.builddir}}/bin/3c \
             -extra-3c-arg=-alltypes \
             -pr .
+
+      - name: Build converted anagram (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
-      - name: Convert bc + build converted (ignore failure)
+      - name: Convert bc
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
@@ -236,10 +260,14 @@ jobs:
             -p ${{env.builddir}}/bin/3c \
             -extra-3c-arg=-alltypes \
             -pr .
+
+      - name: Build converted bc (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
-      - name: Convert ft + build converted (ignore failure)
+      - name: Convert ft
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
@@ -247,10 +275,14 @@ jobs:
             -p ${{env.builddir}}/bin/3c \
             -extra-3c-arg=-alltypes \
             -pr .
+
+      - name: Build converted ft (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
-      - name: Convert ks + build converted (ignore failure)
+      - name: Convert ks
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
@@ -258,10 +290,14 @@ jobs:
             -p ${{env.builddir}}/bin/3c \
             -extra-3c-arg=-alltypes \
             -pr .
+
+      - name: Build converted ks (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
-      - name: Convert yacr2 + build converted (ignore failure)
+      - name: Convert yacr2
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
@@ -269,6 +305,10 @@ jobs:
             -p ${{env.builddir}}/bin/3c \
             -extra-3c-arg=-alltypes \
             -pr .
+
+      - name: Build converted yacr2 (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/compile_converted_project.sh \
             ${{env.builddir}}/bin/clang LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
