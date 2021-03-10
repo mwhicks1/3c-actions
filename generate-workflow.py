@@ -5,6 +5,7 @@
 # jobs with similar content and as far as we know, the workflow language has
 # essentially no support for code reuse. :(
 
+import textwrap
 from typing import List, NamedTuple, Optional
 
 
@@ -39,11 +40,11 @@ benchmarks = [
         'ptrdist',
         'PtrDist',
         'ptrdist-1.1',
-        '''\
-for i in %s ; do \\
-  (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \\
-done
-''' % ' '.join(ptrdist_components),
+        textwrap.dedent(f'''\
+        for i in {' '.join(ptrdist_components)} ; do \\
+          (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \\
+        done
+        '''),
         compile_converted_extra='LOCAL_CFLAGS="-D_ISOC99_SOURCE"',
         components=[BenchmarkComponent(c, c) for c in ptrdist_components]),
 
@@ -53,14 +54,14 @@ done
         'libarchive',
         'LibArchive',
         'libarchive-3.4.3',
-        '''\
-cd build
-cmake -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
-bear make
-''',
-        convert_extra='''\
-  --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \\
-''',
+        textwrap.dedent('''\
+        cd build
+        cmake -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+        bear make
+        '''),
+        convert_extra=textwrap.dedent('''\
+        --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \\
+        '''),
         components=[BenchmarkComponent('LibArchive', 'build')]),
 
     # Lua
@@ -69,14 +70,14 @@ bear make
         'lua',
         'Lua',
         'lua-5.4.1',
-        '''\
-bear make linux
-( cd src ; \\
-  clang-rename-10 -pl -i \\
-    --qualified-name=main \\
-    --new-name=luac_main \\
-    luac.c )
-''',
+        textwrap.dedent('''\
+        bear make linux
+        ( cd src ; \\
+          clang-rename-10 -pl -i \\
+            --qualified-name=main \\
+            --new-name=luac_main \\
+            luac.c )
+        '''),
         compile_converted_extra='linux'),
 
     # LibTiff
@@ -89,22 +90,21 @@ bear make linux
         # get it to use the Checked C compiler. (Surprisingly, for the other
         # CMake-based projects, it seems to be sufficient.) So just configure
         # the project with the Checked C compiler from the beginning.
-        '''\
-cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -DCMAKE_C_FLAGS="-w" .
-bear make tiff
-( cd tools ; \\
-  for i in *.c ; do \\
-    clang-rename-10 -pl -i \\
-      --qualified-name=main \\
-      --new-name=$(basename -s .c $i)_main $i ; \\
-  done)
-''',
-        # XXX Better solution for correct indentation in cases like this?
-        convert_extra='''\
-  --skip '/.*/tif_stream.cxx' \\
-  --skip '.*/test/.*\.c' \\
-  --skip '.*/contrib/.*\.c' \\
-''',
+        textwrap.dedent('''\
+        cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -DCMAKE_C_FLAGS="-w" .
+        bear make tiff
+        ( cd tools ; \\
+          for i in *.c ; do \\
+            clang-rename-10 -pl -i \\
+              --qualified-name=main \\
+              --new-name=$(basename -s .c $i)_main $i ; \\
+          done)
+        '''),
+        convert_extra=textwrap.dedent('''\
+        --skip '/.*/tif_stream.cxx' \\
+        --skip '.*/test/.*\.c' \\
+        --skip '.*/contrib/.*\.c' \\
+        '''),
         compile_converted_extra='tiff'),
 
     # Zlib
@@ -113,13 +113,13 @@ bear make tiff
         'zlib',
         'ZLib',
         'zlib-1.2.11',
-        '''\
-mkdir build
-cd build
-cmake -DCMAKE_C_FLAGS="-w" ..
-bear make
-''',
-        convert_extra="  --skip '/.*/test/.*' \\\n",
+        textwrap.dedent('''\
+        mkdir build
+        cd build
+        cmake -DCMAKE_C_FLAGS="-w" ..
+        bear make
+        '''),
+        convert_extra="--skip '/.*/test/.*' \\\n",
         components=[BenchmarkComponent('zlib', 'build')]),
 ]
 
@@ -220,63 +220,47 @@ class Step(NamedTuple):
     run: str  # Trailing newline but not blank line
 
     def __str__(self):
-        part1 = '''\
-      - name: %s
-        run: |
-''' % self.name
-        part2 = ''.join('          ' + l + '\n' for l in self.run.splitlines())
-        return part1 + part2
+        part1 = textwrap.dedent(f'''\
+        - name: {self.name}
+          run: |
+        ''')
+        part2 = textwrap.indent(self.run, 4 * ' ')
+        return textwrap.indent(part1 + part2, 6 * ' ')
 
 
 with open('.github/workflows/main.yml', 'w') as out:
     out.write(HEADER)
     for binfo in benchmarks:
         for alltypes in (False, True):
-            alltypes_dir = '${{env.benchmark_conv_dir}}/' + (
-                'alltypes' if alltypes else 'no-alltypes')
-            subs = {
-                'name':
-                    binfo.name,
-                'friendly_name':
-                    binfo.friendly_name,
-                'b_dir':
-                    binfo.dir_name,
-                'convert_extra':
-                    binfo.convert_extra or '',
-                'compile_converted_extra':
-                    ' ' + binfo.compile_converted_extra
-                    if binfo.compile_converted_extra is not None else '',
-                'at_job':
-                    'alltypes' if alltypes else 'no_alltypes',
-                'at_job_friendly':
-                    '-alltypes' if alltypes else 'no -alltypes',
-                'at_dir':
-                    alltypes_dir,
-                # Python argparse thinks `-extra-3c-arg -alltypes` is two options
-                # rather than an option with an argument.
-                'at_flag':
-                    '  -extra-3c-arg=-alltypes \\\n' if alltypes else '',
-                'at_ignore_step':
-                    ' (ignore failure)' if alltypes else '',
-                'at_ignore_code':
-                    ' || true' if alltypes else '',
-            }
+            at_dir = ('${{env.benchmark_conv_dir}}/' +
+                      ('alltypes' if alltypes else 'no-alltypes'))
+            at_job = 'alltypes' if alltypes else 'no_alltypes'
+            at_job_friendly = '-alltypes' if alltypes else 'no -alltypes'
+            convert_extra = binfo.convert_extra or ''
+            compile_converted_extra = (' ' + binfo.compile_converted_extra if
+                                       binfo.compile_converted_extra is not None
+                                       else '')
+            # Python argparse thinks `-extra-3c-arg -alltypes` is two options
+            # rather than an option with an argument.
+            at_flag = '-extra-3c-arg=-alltypes \\\n' if alltypes else ''
+            at_ignore_step = ' (ignore failure)' if alltypes else ''
+            at_ignore_code = ' || true' if alltypes else ''
 
-            out.write('''\
+            out.write(f'''\
 
-  test_%(name)s_%(at_job)s:
-    name: Test %(friendly_name)s (%(at_job_friendly)s)
+  test_{binfo.name}_{at_job}:
+    name: Test {binfo.friendly_name} ({at_job_friendly})
     needs: build_3c
     runs-on: self-hosted
     steps:
-''' % subs)
+''')
 
-            full_build_cmds = ('''\
-mkdir -p %(at_dir)s
-cd %(at_dir)s
-tar -xvzf ${{env.benchmark_tar_dir}}/%(b_dir)s.tar.gz
-cd %(b_dir)s
-''' % subs) + binfo.build_cmds
+            full_build_cmds = textwrap.dedent(f'''\
+            mkdir -p {at_dir}
+            cd {at_dir}
+            tar -xvzf ${{{{env.benchmark_tar_dir}}}}/{binfo.dir_name}.tar.gz
+            cd {binfo.dir_name}
+            ''') + binfo.build_cmds
 
             steps = [Step('Build ' + binfo.friendly_name, full_build_cmds)]
 
@@ -285,30 +269,35 @@ cd %(b_dir)s
                 components = [BenchmarkComponent(binfo.friendly_name)]
 
             for component in components:
-                component_dir = '%(at_dir)s/%(b_dir)s' % subs
+                component_dir = f'{at_dir}/{binfo.dir_name}'
                 if component.subdir is not None:
                     component_dir += '/' + component.subdir
-                subs2 = dict(subs)
-                subs2.update({'c_dir': component_dir})
+
+                # yapf: disable
+                convert_flags = textwrap.indent(
+                    convert_extra +
+                    '--includeDir ${{env.include_dir}} \\\n' +
+                    '-p ${{env.builddir}}/bin/3c \\\n' +
+                    at_flag +
+                    '-pr .\n',
+                    2 * ' ')
+                # yapf: enable
+                steps.append(
+                    Step(
+                        'Convert ' + component.name,
+                        textwrap.dedent(f'''\
+                        cd {component_dir}
+                        ${{{{env.port_tools}}}}/convert_project.py \\
+                        ''') + convert_flags))
 
                 steps.append(
                     Step(
-                        'Convert ' + component.name, '''\
-cd %(c_dir)s
-${{env.port_tools}}/convert_project.py \\
-%(convert_extra)s  --includeDir ${{env.include_dir}} \\
-  -p ${{env.builddir}}/bin/3c \\
-%(at_flag)s  -pr .
-''' % subs2))
-
-                steps.append(
-                    Step(
-                        'Build converted ' + component.name +
-                        subs['at_ignore_step'], '''\
-cd %(c_dir)s
-${{env.port_tools}}/compile_converted_project.sh \\
-  ${{env.builddir}}/bin/clang%(compile_converted_extra)s%(at_ignore_code)s
-''' % subs2))
+                        'Build converted ' + component.name + at_ignore_step,
+                        textwrap.dedent(f'''\
+                        cd {component_dir}
+                        ${{{{env.port_tools}}}}/compile_converted_project.sh \\
+                          ${{{{env.builddir}}}}/bin/clang{compile_converted_extra}{at_ignore_code}
+                        ''')))
 
             # We want blank lines between steps but not after the last step of
             # the last benchmark.
