@@ -10,8 +10,12 @@ from typing import List, NamedTuple, Optional
 
 
 class BenchmarkComponent(NamedTuple):
-    name: str
+    # Default: Same as the benchmark's friendly_name.
+    friendly_name: Optional[str] = None
+    # Default: The benchmark's main directory.
     subdir: Optional[str] = None
+    # Relative to subdir. Default: Same directory.
+    build_dir: Optional[str] = None
 
 
 class BenchmarkInfo(NamedTuple):
@@ -19,10 +23,29 @@ class BenchmarkInfo(NamedTuple):
     friendly_name: str
     dir_name: str
     build_cmds: str
+    # Please use the `-k` option to `make` or its analogue so we can catch as
+    # many errors as possible on one workflow run.
+    build_converted_cmd: str
     convert_extra: Optional[str] = None
-    compile_converted_extra: Optional[str] = None
+    # Default: One component with all default properties.
     components: Optional[List[BenchmarkComponent]] = None
 
+
+# Encapsulate the standard option to use the Checked C compiler for either a
+# CMake project or a `make` project that uses the traditional CC variable.
+make_checkedc = 'make CC="${{env.builddir}}/bin/clang"'
+cmake_checkedc = 'cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang'
+
+# There is a known incompatibility between the vsftpd version we're using and
+# Clang: vsftpd triggers a -Wenum-conversion warning that becomes an error with
+# -Werror. See, for example:
+#
+# https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=170101
+#
+# For now, we avoid the problem by turning off -Wenum-conversion. Unfortunately,
+# the vsftpd makefile doesn't give us a way to add one flag to its CFLAGS list,
+# so we stuff the flag in CC instead.
+vsftpd_make = 'make CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"'
 
 ptrdist_components = ['anagram', 'bc', 'ft', 'ks', 'yacr2']
 
@@ -33,65 +56,73 @@ ptrdist_components = ['anagram', 'bc', 'ft', 'ks', 'yacr2']
 benchmarks = [
 
     # Vsftpd
-    BenchmarkInfo('vsftpd', 'Vsftpd', 'vsftpd-3.0.3', 'bear make\n'),
+    BenchmarkInfo(
+        #
+        name='vsftpd',
+        friendly_name='Vsftpd',
+        dir_name='vsftpd-3.0.3',
+        build_cmds=f'bear {vsftpd_make}',
+        build_converted_cmd=f'{vsftpd_make} -k'),
 
     # PtrDist
     BenchmarkInfo(
-        'ptrdist',
-        'PtrDist',
-        'ptrdist-1.1',
-        textwrap.dedent(f'''\
+        #
+        name='ptrdist',
+        friendly_name='PtrDist',
+        dir_name='ptrdist-1.1',
+        build_cmds=textwrap.dedent(f'''\
         for i in {' '.join(ptrdist_components)} ; do \\
-          (cd $i ; bear make LOCAL_CFLAGS="-D_ISOC99_SOURCE") \\
+          (cd $i ; bear {make_checkedc} LOCAL_CFLAGS="-D_ISOC99_SOURCE") \\
         done
         '''),
-        compile_converted_extra='LOCAL_CFLAGS="-D_ISOC99_SOURCE"',
-        components=[BenchmarkComponent(c, c) for c in ptrdist_components]),
+        build_converted_cmd=(
+            f'{make_checkedc} -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"'),
+        components=[
+            BenchmarkComponent(friendly_name=c, subdir=c)
+            for c in ptrdist_components
+        ]),
 
     # LibArchive
     BenchmarkInfo(
         #
-        'libarchive',
-        'LibArchive',
-        'libarchive-3.4.3',
-        textwrap.dedent('''\
+        name='libarchive',
+        friendly_name='LibArchive',
+        dir_name='libarchive-3.4.3',
+        build_cmds=textwrap.dedent(f'''\
         cd build
-        cmake -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+        {cmake_checkedc} -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
         bear make
         '''),
+        build_converted_cmd='make -k',
         convert_extra=textwrap.dedent('''\
         --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \\
         '''),
-        components=[BenchmarkComponent('LibArchive', 'build')]),
+        components=[BenchmarkComponent(build_dir='build')]),
 
     # Lua
     BenchmarkInfo(
         #
-        'lua',
-        'Lua',
-        'lua-5.4.1',
-        textwrap.dedent('''\
-        bear make linux
+        name='lua',
+        friendly_name='Lua',
+        dir_name='lua-5.4.1',
+        build_cmds=textwrap.dedent(f'''\
+        bear {make_checkedc} linux
         ( cd src ; \\
           clang-rename-10 -pl -i \\
             --qualified-name=main \\
             --new-name=luac_main \\
             luac.c )
         '''),
-        compile_converted_extra='linux'),
+        build_converted_cmd=f'{make_checkedc} -k linux'),
 
     # LibTiff
     BenchmarkInfo(
-        'libtiff',
-        'LibTiff',
-        'tiff-4.1.0',
-        # Having compile_converted_project.sh pass
-        # CC=${{env.builddir}}/bin/clang to `make` seems to be insufficient to
-        # get it to use the Checked C compiler. (Surprisingly, for the other
-        # CMake-based projects, it seems to be sufficient.) So just configure
-        # the project with the Checked C compiler from the beginning.
-        textwrap.dedent('''\
-        cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -DCMAKE_C_FLAGS="-w" .
+        #
+        name='libtiff',
+        friendly_name='LibTiff',
+        dir_name='tiff-4.1.0',
+        build_cmds=textwrap.dedent(f'''\
+        {cmake_checkedc} -DCMAKE_C_FLAGS="-w" .
         bear make tiff
         ( cd tools ; \\
           for i in *.c ; do \\
@@ -100,27 +131,28 @@ benchmarks = [
               --new-name=$(basename -s .c $i)_main $i ; \\
           done)
         '''),
+        build_converted_cmd='make -k tiff',
         convert_extra=textwrap.dedent('''\
         --skip '/.*/tif_stream.cxx' \\
         --skip '.*/test/.*\.c' \\
         --skip '.*/contrib/.*\.c' \\
-        '''),
-        compile_converted_extra='tiff'),
+        ''')),
 
     # Zlib
     BenchmarkInfo(
         #
-        'zlib',
-        'ZLib',
-        'zlib-1.2.11',
-        textwrap.dedent('''\
+        name='zlib',
+        friendly_name='ZLib',
+        dir_name='zlib-1.2.11',
+        build_cmds=textwrap.dedent(f'''\
         mkdir build
         cd build
-        cmake -DCMAKE_C_FLAGS="-w" ..
+        {cmake_checkedc} -DCMAKE_C_FLAGS="-w" ..
         bear make
         '''),
-        convert_extra="--skip '/.*/test/.*' \\\n",
-        components=[BenchmarkComponent('zlib', 'build')]),
+        build_converted_cmd='make -k',
+        convert_extra="--skip '/.*/test/.*' \\",
+        components=[BenchmarkComponent(build_dir='build')]),
 ]
 
 HEADER = '''\
@@ -172,9 +204,19 @@ jobs:
     needs: clean
     runs-on: self-hosted
     steps:
+      - name: Check out the actions repository
+        uses: actions/checkout@v2
+        with:
+          path: depsfolder/actions
+      - name: Check that the workflow file is up to date with generate-workflow.py before running it
+        run: |
+          cd ${{github.workspace}}/depsfolder/actions
+          ./generate-workflow.py
+          git diff --exit-code
+
       - name: Branch or commit ID
         run: echo "${{ github.event.inputs.branch || env.branch_for_scheduled_run }}"
-      - name: Checkout our repository
+      - name: Check out the 3C repository and the Checked C system headers
         run: |
           git init ${{github.workspace}}/depsfolder/checkedc-clang
           cd ${{github.workspace}}/depsfolder/checkedc-clang
@@ -228,6 +270,10 @@ class Step(NamedTuple):
         return textwrap.indent(part1 + part2, 6 * ' ')
 
 
+def ensure_trailing_newline(s: str):
+    return s + '\n' if s != '' and not s.endswith('\n') else s
+
+
 with open('.github/workflows/main.yml', 'w') as out:
     out.write(HEADER)
     for binfo in benchmarks:
@@ -236,13 +282,12 @@ with open('.github/workflows/main.yml', 'w') as out:
                       ('alltypes' if alltypes else 'no-alltypes'))
             at_job = 'alltypes' if alltypes else 'no_alltypes'
             at_job_friendly = '-alltypes' if alltypes else 'no -alltypes'
-            convert_extra = binfo.convert_extra or ''
-            compile_converted_extra = (' ' + binfo.compile_converted_extra if
-                                       binfo.compile_converted_extra is not None
-                                       else '')
-            # Python argparse thinks `-extra-3c-arg -alltypes` is two options
+            convert_extra = (ensure_trailing_newline(binfo.convert_extra)
+                             if binfo.convert_extra is not None else '')
+            build_converted_cmd = binfo.build_converted_cmd.rstrip('\n')
+            # Python argparse thinks `--extra-3c-arg -alltypes` is two options
             # rather than an option with an argument.
-            at_flag = '-extra-3c-arg=-alltypes \\\n' if alltypes else ''
+            at_flag = '--extra-3c-arg=-alltypes \\\n' if alltypes else ''
             at_ignore_step = ' (ignore failure)' if alltypes else ''
             at_ignore_code = ' || true' if alltypes else ''
 
@@ -260,7 +305,7 @@ with open('.github/workflows/main.yml', 'w') as out:
             cd {at_dir}
             tar -xvzf ${{{{env.benchmark_tar_dir}}}}/{binfo.dir_name}.tar.gz
             cd {binfo.dir_name}
-            ''') + binfo.build_cmds
+            ''') + ensure_trailing_newline(binfo.build_cmds)
 
             steps = [Step('Build ' + binfo.friendly_name, full_build_cmds)]
 
@@ -272,19 +317,24 @@ with open('.github/workflows/main.yml', 'w') as out:
                 component_dir = f'{at_dir}/{binfo.dir_name}'
                 if component.subdir is not None:
                     component_dir += '/' + component.subdir
+                component_friendly_name = (component.friendly_name or
+                                           binfo.friendly_name)
 
                 # yapf: disable
                 convert_flags = textwrap.indent(
                     convert_extra +
                     '--includeDir ${{env.include_dir}} \\\n' +
-                    '-p ${{env.builddir}}/bin/3c \\\n' +
+                    '--prog_name ${{env.builddir}}/bin/3c \\\n' +
                     at_flag +
-                    '-pr .\n',
+                    '--project_path .' +
+                    (f' \\\n--build_dir {component.build_dir}'
+                     if component.build_dir is not None else '') +
+                    '\n',
                     2 * ' ')
                 # yapf: enable
                 steps.append(
                     Step(
-                        'Convert ' + component.name,
+                        'Convert ' + component_friendly_name,
                         textwrap.dedent(f'''\
                         cd {component_dir}
                         ${{{{env.port_tools}}}}/convert_project.py \\
@@ -292,12 +342,19 @@ with open('.github/workflows/main.yml', 'w') as out:
 
                 steps.append(
                     Step(
-                        'Build converted ' + component.name + at_ignore_step,
+                        'Build converted ' + component_friendly_name +
+                        at_ignore_step,
+                        # convert_project.py sets -output-dir=out.checked as
+                        # standard.
                         textwrap.dedent(f'''\
                         cd {component_dir}
-                        ${{{{env.port_tools}}}}/compile_converted_project.sh \\
-                          ${{{{env.builddir}}}}/bin/clang{compile_converted_extra}{at_ignore_code}
-                        ''')))
+                        cp -r out.checked/* .
+                        rm -r out.checked
+                        ''') +
+                        #
+                        (f'cd {component.build_dir}\n'
+                         if component.build_dir is not None else '') +
+                        f'{build_converted_cmd}{at_ignore_code}\n'))
 
             # We want blank lines between steps but not after the last step of
             # the last benchmark.
