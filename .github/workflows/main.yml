@@ -70,9 +70,21 @@ jobs:
       - name: Build 3c and clang
         run: |
           cd ${{env.builddir}}
+          # We'll be running the tools enough that it's worth spending the extra
+          # time for an optimized build, and the easiest way to do that is to
+          # use a "release" build. But we do want assertions and we do want
+          # debug info in order to get symbols in assertion stack traces, so we
+          # use -DLLVM_ENABLE_ASSERTIONS=ON and the RelWithDebInfo build type,
+          # respectively. Furthermore, the tools rely on the llvm-symbolizer
+          # helper program to actually read the debug info and generate the
+          # symbolized stack trace when an assertion failure occurs. We could
+          # build it here, but as of 2021-03-15, we just use Ubuntu's version
+          # installed systemwide; it seems that llvm-symbolizer is a generic
+          # tool and the difference in versions does not matter.
           cmake -G Ninja \
             -DLLVM_TARGETS_TO_BUILD=X86 \
-            -DCMAKE_BUILD_TYPE="Debug" \
+            -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
+            -DLLVM_ENABLE_ASSERTIONS=ON \
             -DLLVM_OPTIMIZED_TABLEGEN=ON \
             -DLLVM_USE_SPLIT_DWARF=ON \
             -DLLVM_ENABLE_PROJECTS="clang" \
