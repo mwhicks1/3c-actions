@@ -331,10 +331,13 @@ with open('.github/workflows/main.yml', 'w') as out:
     out.write(HEADER)
     for binfo in benchmarks:
         for alltypes in (False, True):
+            preprocess_before_conversion = True
             at_dir = ('${{env.benchmark_conv_dir}}/' +
                       ('alltypes' if alltypes else 'no-alltypes'))
             at_job = 'alltypes' if alltypes else 'no_alltypes'
             at_job_friendly = '-alltypes' if alltypes else 'no -alltypes'
+            pbc_job_friendly = ('preprocessed, '
+                                if preprocess_before_conversion else '')
             convert_extra = (ensure_trailing_newline(binfo.convert_extra)
                              if binfo.convert_extra is not None else '')
             build_converted_cmd = binfo.build_converted_cmd.rstrip('\n')
@@ -347,7 +350,7 @@ with open('.github/workflows/main.yml', 'w') as out:
             out.write(f'''\
 
   test_{binfo.name}_{at_job}:
-    name: Test {binfo.friendly_name} ({at_job_friendly})
+    name: Test {binfo.friendly_name} ({pbc_job_friendly}{at_job_friendly})
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -376,6 +379,7 @@ with open('.github/workflows/main.yml', 'w') as out:
                 # yapf: disable
                 convert_flags = textwrap.indent(
                     convert_extra +
+                    '--preprocess_before_conversion \\\n' +
                     '--includeDir ${{env.include_dir}} \\\n' +
                     '--prog_name ${{env.builddir}}/bin/3c \\\n' +
                     at_flag +

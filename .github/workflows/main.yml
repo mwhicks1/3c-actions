@@ -107,7 +107,7 @@ jobs:
   # Convert our benchmark programs
 
   test_vsftpd_no_alltypes:
-    name: Test Vsftpd (no -alltypes)
+    name: Test Vsftpd (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -123,6 +123,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -135,7 +136,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k
 
   test_vsftpd_alltypes:
-    name: Test Vsftpd (-alltypes)
+    name: Test Vsftpd (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -151,6 +152,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -164,7 +166,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k || true
 
   test_ptrdist_no_alltypes:
-    name: Test PtrDist (no -alltypes)
+    name: Test PtrDist (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -182,6 +184,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -197,6 +200,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -212,6 +216,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -227,6 +232,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -242,6 +248,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -254,7 +261,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
   test_ptrdist_alltypes:
-    name: Test PtrDist (-alltypes)
+    name: Test PtrDist (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -272,6 +279,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -288,6 +296,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -304,6 +313,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -320,6 +330,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -336,6 +347,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -349,7 +361,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
   test_libarchive_no_alltypes:
-    name: Test LibArchive (no -alltypes)
+    name: Test LibArchive (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -368,6 +380,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path . \
@@ -382,7 +395,7 @@ jobs:
           ninja -l $(nproc) -k 0 archive
 
   test_libarchive_alltypes:
-    name: Test LibArchive (-alltypes)
+    name: Test LibArchive (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -401,6 +414,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -416,7 +430,7 @@ jobs:
           ninja -l $(nproc) -k 0 archive || true
 
   test_lua_no_alltypes:
-    name: Test Lua (no -alltypes)
+    name: Test Lua (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -437,6 +451,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -450,7 +465,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux
 
   test_lua_alltypes:
-    name: Test Lua (-alltypes)
+    name: Test Lua (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -471,6 +486,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -485,7 +501,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux || true
 
   test_libtiff_no_alltypes:
-    name: Test LibTiff (no -alltypes)
+    name: Test LibTiff (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -511,6 +527,7 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -523,7 +540,7 @@ jobs:
           ninja -l $(nproc) -k 0 tiff
 
   test_libtiff_alltypes:
-    name: Test LibTiff (-alltypes)
+    name: Test LibTiff (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -549,6 +566,7 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -562,7 +580,7 @@ jobs:
           ninja -l $(nproc) -k 0 tiff || true
 
   test_zlib_no_alltypes:
-    name: Test ZLib (no -alltypes)
+    name: Test ZLib (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -582,6 +600,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path . \
@@ -596,7 +615,7 @@ jobs:
           ninja -l $(nproc) -k 0 zlib
 
   test_zlib_alltypes:
-    name: Test ZLib (-alltypes)
+    name: Test ZLib (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -616,6 +635,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -631,7 +651,7 @@ jobs:
           ninja -l $(nproc) -k 0 zlib || true
 
   test_icecast_no_alltypes:
-    name: Test Icecast (no -alltypes)
+    name: Test Icecast (preprocessed, no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -648,6 +668,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no-alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -660,7 +681,7 @@ jobs:
           make -j $(nproc) -l $(nproc) --output-sync -k
 
   test_icecast_alltypes:
-    name: Test Icecast (-alltypes)
+    name: Test Icecast (preprocessed, -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -677,6 +698,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
+            --preprocess_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
