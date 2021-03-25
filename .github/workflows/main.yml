@@ -121,11 +121,12 @@ jobs:
 
       - name: Convert Vsftpd
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
 
       - name: Build converted Vsftpd
         run: |
@@ -149,12 +150,13 @@ jobs:
 
       - name: Convert Vsftpd
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3
 
       - name: Build converted Vsftpd (ignore failure)
         run: |
@@ -180,11 +182,12 @@ jobs:
 
       - name: Convert anagram
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
 
       - name: Build converted anagram
         run: |
@@ -195,11 +198,12 @@ jobs:
 
       - name: Convert bc
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
 
       - name: Build converted bc
         run: |
@@ -210,11 +214,12 @@ jobs:
 
       - name: Convert ft
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
 
       - name: Build converted ft
         run: |
@@ -225,11 +230,12 @@ jobs:
 
       - name: Convert ks
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
 
       - name: Build converted ks
         run: |
@@ -240,11 +246,12 @@ jobs:
 
       - name: Convert yacr2
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
 
       - name: Build converted yacr2
         run: |
@@ -270,12 +277,13 @@ jobs:
 
       - name: Convert anagram
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
 
       - name: Build converted anagram (ignore failure)
         run: |
@@ -286,12 +294,13 @@ jobs:
 
       - name: Convert bc
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
 
       - name: Build converted bc (ignore failure)
         run: |
@@ -302,12 +311,13 @@ jobs:
 
       - name: Convert ft
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
 
       - name: Build converted ft (ignore failure)
         run: |
@@ -318,12 +328,13 @@ jobs:
 
       - name: Convert ks
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
 
       - name: Build converted ks (ignore failure)
         run: |
@@ -334,12 +345,13 @@ jobs:
 
       - name: Convert yacr2
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
 
       - name: Build converted yacr2 (ignore failure)
         run: |
@@ -365,13 +377,14 @@ jobs:
 
       - name: Convert LibArchive
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3.work
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path . \
-            --build_dir build
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3 \
+            --build_dir ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3/build
 
       - name: Build converted LibArchive
         run: |
@@ -398,14 +411,15 @@ jobs:
 
       - name: Convert LibArchive
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3.work
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path . \
-            --build_dir build
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3 \
+            --build_dir ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3/build
 
       - name: Build converted LibArchive (ignore failure)
         run: |
@@ -435,11 +449,12 @@ jobs:
 
       - name: Convert Lua
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
 
       - name: Build converted Lua
         run: |
@@ -469,12 +484,13 @@ jobs:
 
       - name: Convert Lua
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1.work
           ${{env.port_tools}}/convert_project.py \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1
 
       - name: Build converted Lua (ignore failure)
         run: |
@@ -506,14 +522,15 @@ jobs:
 
       - name: Convert LibTiff
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0.work
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0
 
       - name: Build converted LibTiff
         run: |
@@ -544,7 +561,8 @@ jobs:
 
       - name: Convert LibTiff
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/tiff-4.1.0
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/tiff-4.1.0.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/tiff-4.1.0.work
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
@@ -552,7 +570,7 @@ jobs:
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path .
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/tiff-4.1.0
 
       - name: Build converted LibTiff (ignore failure)
         run: |
@@ -579,13 +597,14 @@ jobs:
 
       - name: Convert ZLib
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11
+          mkdir ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11.work
+          cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11.work
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
-            --project_path . \
-            --build_dir build
+            --project_path ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11 \
+            --build_dir ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11/build
 
       - name: Build converted ZLib
         run: |
@@ -613,14 +632,15 @@ jobs:
 
       - name: Convert ZLib
         run: |
-          cd ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11
+          mkdir ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11.work
+          cd ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11.work
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
-            --project_path . \
-            --build_dir build
+            --project_path ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11 \
+            --build_dir ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11/build
 
       - name: Build converted ZLib (ignore failure)
         run: |

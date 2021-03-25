@@ -379,8 +379,8 @@ with open('.github/workflows/main.yml', 'w') as out:
                     '--includeDir ${{env.include_dir}} \\\n' +
                     '--prog_name ${{env.builddir}}/bin/3c \\\n' +
                     at_flag +
-                    '--project_path .' +
-                    (f' \\\n--build_dir {component.build_dir}'
+                    f'--project_path {component_dir}' +
+                    (f' \\\n--build_dir {component_dir}/{component.build_dir}'
                      if component.build_dir is not None else '') +
                     '\n',
                     2 * ' ')
@@ -388,8 +388,17 @@ with open('.github/workflows/main.yml', 'w') as out:
                 steps.append(
                     Step(
                         'Convert ' + component_friendly_name,
+                        # Choose a working directory different from all the
+                        # other important directories involved (the source
+                        # directory, build directory, etc.) to detect if
+                        # anything called by convert_project inappropriately
+                        # assumes that the working directory matches one of
+                        # those other directories. If anything called by
+                        # convert_project writes diagnostic files to its working
+                        # directory, this also helps to keep them separate.
                         textwrap.dedent(f'''\
-                        cd {component_dir}
+                        mkdir {component_dir}.work
+                        cd {component_dir}.work
                         ${{{{env.port_tools}}}}/convert_project.py \\
                         ''') + convert_flags))
 
