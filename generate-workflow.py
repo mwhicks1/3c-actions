@@ -31,9 +31,29 @@ class BenchmarkInfo(NamedTuple):
     components: Optional[List[BenchmarkComponent]] = None
 
 
+# Standard options for `ninja` and parallel `make`.
+#
+# - `-j` and `--output-sync` make `make` behave more like `ninja`.
+#
+# - For both tools, `-l` is a crude attempt to try to avoid bogging down the
+#   machine by using too much memory if other jobs are running on the machine.
+#   If (for example) multiple ninja instances run concurrently, each will try to
+#   run approximately `$(nproc)` parallel jobs, which can make a machine
+#   unresponsive. (Anecdotal evidence suggests that `nice` is insufficient to
+#   avoid the problem because it only directly controls CPU priority.) We set
+#   `-l` to `$(nproc)` to try to use all hyperthreads when the machine is
+#   otherwise idle; to a first approximation, there should be no benefit to
+#   setting it higher. We hope that the resulting total memory usage is not too
+#   much.
+#
+# TODO: Factor these out into wrapper scripts that users can call manually for
+# all their builds?
+ninja_std = 'ninja -l $(nproc)'
+make_std = 'make -j $(nproc) -l $(nproc) --output-sync'
+
 # Encapsulate the standard option to use the Checked C compiler for either a
 # CMake project or a `make` project that uses the traditional CC variable.
-make_checkedc = 'make CC="${{env.builddir}}/bin/clang"'
+make_checkedc = f'{make_std} CC="${{{{env.builddir}}}}/bin/clang"'
 cmake_checkedc = 'cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang'
 
 # There is a known incompatibility between the vsftpd version we're using and
@@ -45,7 +65,7 @@ cmake_checkedc = 'cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang'
 # For now, we avoid the problem by turning off -Wenum-conversion. Unfortunately,
 # the vsftpd makefile doesn't give us a way to add one flag to its CFLAGS list,
 # so we stuff the flag in CC instead.
-vsftpd_make = 'make CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"'
+vsftpd_make = f'{make_std} CC="${{{{env.builddir}}}}/bin/clang -Wno-enum-conversion"'
 
 ptrdist_components = ['anagram', 'bc', 'ft', 'ks', 'yacr2']
 
@@ -90,10 +110,10 @@ benchmarks = [
         dir_name='libarchive-3.4.3',
         build_cmds=textwrap.dedent(f'''\
         cd build
-        {cmake_checkedc} -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
-        bear make archive
+        {cmake_checkedc} -G Ninja -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+        bear {ninja_std} archive
         '''),
-        build_converted_cmd='make -k archive',
+        build_converted_cmd=f'{ninja_std} -k 0 archive',
         convert_extra=textwrap.dedent('''\
         --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \\
         '''),
@@ -129,8 +149,8 @@ benchmarks = [
         friendly_name='LibTiff',
         dir_name='tiff-4.1.0',
         build_cmds=textwrap.dedent(f'''\
-        {cmake_checkedc} -DCMAKE_C_FLAGS="-w" .
-        bear make tiff
+        {cmake_checkedc} -G Ninja -DCMAKE_C_FLAGS="-w" .
+        bear {ninja_std} tiff
         ( cd tools ; \\
           for i in *.c ; do \\
             clang-rename-10 -pl -i \\
@@ -138,7 +158,7 @@ benchmarks = [
               --new-name=$(basename -s .c $i)_main $i ; \\
           done)
         '''),
-        build_converted_cmd='make -k tiff',
+        build_converted_cmd=f'{ninja_std} -k 0 tiff',
         convert_extra=textwrap.dedent('''\
         --skip '/.*/tif_stream.cxx' \\
         --skip '.*/test/.*\.c' \\
@@ -154,10 +174,10 @@ benchmarks = [
         build_cmds=textwrap.dedent(f'''\
         mkdir build
         cd build
-        {cmake_checkedc} -DCMAKE_C_FLAGS="-w" ..
-        bear make zlib
+        {cmake_checkedc} -G Ninja -DCMAKE_C_FLAGS="-w" ..
+        bear {ninja_std} zlib
         '''),
-        build_converted_cmd='make -k zlib',
+        build_converted_cmd=f'{ninja_std} -k 0 zlib',
         convert_extra="--skip '/.*/test/.*' \\",
         components=[BenchmarkComponent(build_dir='build')]),
 
@@ -167,11 +187,11 @@ benchmarks = [
         name='icecast',
         friendly_name='Icecast',
         dir_name='icecast-2.4.4',
-        build_cmds=textwrap.dedent('''\
-        CC="${{env.builddir}}/bin/clang" ./configure
-        bear make
+        build_cmds=textwrap.dedent(f'''\
+        CC="${{{{env.builddir}}}}/bin/clang" ./configure
+        bear {make_std}
         '''),
-        build_converted_cmd='make -k'),
+        build_converted_cmd=f'{make_std} -k'),
 ]
 
 HEADER = '''\
@@ -266,10 +286,7 @@ jobs:
             -DLLVM_USE_SPLIT_DWARF=ON \\
             -DLLVM_ENABLE_PROJECTS="clang" \\
             ${{github.workspace}}/depsfolder/checkedc-clang/llvm
-          # -l 36: Try not to overload gamera. Hopefully this will use all 36
-          # hyperthreads when nothing else is running and automatically scale
-          # back when other jobs are running. TODO: Better solution?
-          ninja -l 36 3c clang
+          {ninja_std} 3c clang
           chmod -R 777 ${{github.workspace}}/depsfolder
           chmod -R 777 ${{env.builddir}}
 
@@ -282,10 +299,15 @@ jobs:
       - name: 3C regression tests
         run: |
           cd ${{env.builddir}}
-          ninja check-3c
+          {ninja_std} check-3c
 
   # Convert our benchmark programs
 '''
+
+# For this exceptionally long string literal, the trade-off is in favor of
+# replacing {ninja_std} ad-hoc rather than using an f-string, which would
+# require us to escape all the curly braces.
+HEADER = HEADER.replace('{ninja_std}', ninja_std)
 
 
 class Step(NamedTuple):
