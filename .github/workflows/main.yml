@@ -123,7 +123,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -152,7 +151,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -182,9 +180,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted Vsftpd
@@ -211,10 +209,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted Vsftpd (ignore failure)
@@ -243,7 +241,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -259,7 +256,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -275,7 +271,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -291,7 +286,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -307,7 +301,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -338,7 +331,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -355,7 +347,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -372,7 +363,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -389,7 +379,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -406,7 +395,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -438,9 +426,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted anagram
@@ -454,9 +442,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted bc
@@ -470,9 +458,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted ft
@@ -486,9 +474,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted ks
@@ -502,9 +490,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted yacr2
@@ -533,10 +521,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted anagram (ignore failure)
@@ -550,10 +538,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted bc (ignore failure)
@@ -567,10 +555,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted ft (ignore failure)
@@ -584,10 +572,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted ks (ignore failure)
@@ -601,10 +589,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted yacr2 (ignore failure)
@@ -634,7 +622,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path . \
@@ -668,7 +655,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -703,9 +689,9 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path . \
             --build_dir build
 
@@ -737,10 +723,10 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path . \
             --build_dir build
 
@@ -774,7 +760,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -809,7 +794,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -845,9 +829,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted Lua
@@ -880,10 +864,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted Lua (ignore failure)
@@ -921,7 +905,6 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -960,7 +943,6 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -1000,9 +982,9 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted LibTiff
@@ -1039,10 +1021,10 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted LibTiff (ignore failure)
@@ -1073,7 +1055,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path . \
@@ -1108,7 +1089,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -1144,9 +1124,9 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path . \
             --build_dir build
 
@@ -1179,10 +1159,10 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path . \
             --build_dir build
 
@@ -1212,7 +1192,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
@@ -1242,7 +1221,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
@@ -1273,9 +1251,9 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted Icecast
@@ -1303,10 +1281,10 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
             --project_path .
 
       - name: Build converted Icecast (ignore failure)

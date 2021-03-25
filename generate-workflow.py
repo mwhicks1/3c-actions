@@ -345,6 +345,8 @@ with open('.github/workflows/main.yml', 'w') as out:
             # Python argparse thinks `--extra-3c-arg -alltypes` is two options
             # rather than an option with an argument.
             at_flag = '--extra-3c-arg=-alltypes \\\n' if alltypes else ''
+            embc_flag = ('--expand_macros_before_conversion \\\n'
+                         if expand_macros else '')
             at_ignore_step = ' (ignore failure)' if alltypes else ''
             at_ignore_code = ' || true' if alltypes else ''
 
@@ -380,10 +382,9 @@ with open('.github/workflows/main.yml', 'w') as out:
                 # yapf: disable
                 convert_flags = textwrap.indent(
                     convert_extra +
-                    '--expand_macros_before_conversion \\\n' +
                     '--includeDir ${{env.include_dir}} \\\n' +
                     '--prog_name ${{env.builddir}}/bin/3c \\\n' +
-                    at_flag +
+                    at_flag + embc_flag +
                     '--project_path .' +
                     (f' \\\n--build_dir {component.build_dir}'
                      if component.build_dir is not None else '') +
