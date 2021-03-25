@@ -335,8 +335,9 @@ with open('.github/workflows/main.yml', 'w') as out:
                                                          (False, True)):
             variant = (('expand_macros_' if expand_macros else '') +
                        ('alltypes' if alltypes else 'no_alltypes'))
-            variant_friendly = (('macro-expanded, ' if expand_macros else '') +
-                                ('-alltypes' if alltypes else 'no -alltypes'))
+            variant_friendly = (('' if expand_macros else 'not ') +
+                                'macro-expanded, ' +
+                                ('' if alltypes else 'no ') + '-alltypes')
             variant_dir = '${{env.benchmark_conv_dir}}/' + variant
             convert_extra = (ensure_trailing_newline(binfo.convert_extra)
                              if binfo.convert_extra is not None else '')
