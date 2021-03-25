@@ -5,6 +5,7 @@
 # jobs with similar content and as far as we know, the workflow language has
 # essentially no support for code reuse. :(
 
+import itertools
 import textwrap
 from typing import List, NamedTuple, Optional
 
@@ -330,14 +331,13 @@ def ensure_trailing_newline(s: str):
 with open('.github/workflows/main.yml', 'w') as out:
     out.write(HEADER)
     for binfo in benchmarks:
-        for alltypes in (False, True):
-            expand_macros_before_conversion = True
-            at_dir = ('${{env.benchmark_conv_dir}}/' +
-                      ('alltypes' if alltypes else 'no-alltypes'))
-            at_job = 'alltypes' if alltypes else 'no_alltypes'
-            at_job_friendly = '-alltypes' if alltypes else 'no -alltypes'
-            embc_job_friendly = ('macro-expanded, '
-                                 if expand_macros_before_conversion else '')
+        for expand_macros, alltypes in itertools.product((False, True),
+                                                         (False, True)):
+            variant = (('expand_macros_' if expand_macros else '') +
+                       ('alltypes' if alltypes else 'no_alltypes'))
+            variant_friendly = (('macro-expanded, ' if expand_macros else '') +
+                                ('-alltypes' if alltypes else 'no -alltypes'))
+            variant_dir = '${{env.benchmark_conv_dir}}/' + variant
             convert_extra = (ensure_trailing_newline(binfo.convert_extra)
                              if binfo.convert_extra is not None else '')
             build_converted_cmd = binfo.build_converted_cmd.rstrip('\n')
@@ -349,16 +349,16 @@ with open('.github/workflows/main.yml', 'w') as out:
 
             out.write(f'''\
 
-  test_{binfo.name}_{at_job}:
-    name: Test {binfo.friendly_name} ({embc_job_friendly}{at_job_friendly})
+  test_{binfo.name}_{variant}:
+    name: Test {binfo.friendly_name} ({variant_friendly})
     needs: build_3c
     runs-on: self-hosted
     steps:
 ''')
 
             full_build_cmds = textwrap.dedent(f'''\
-            mkdir -p {at_dir}
-            cd {at_dir}
+            mkdir -p {variant_dir}
+            cd {variant_dir}
             tar -xvzf ${{{{env.benchmark_tar_dir}}}}/{binfo.dir_name}.tar.gz
             cd {binfo.dir_name}
             ''') + ensure_trailing_newline(binfo.build_cmds)
@@ -370,7 +370,7 @@ with open('.github/workflows/main.yml', 'w') as out:
                 components = [BenchmarkComponent(binfo.friendly_name)]
 
             for component in components:
-                component_dir = f'{at_dir}/{binfo.dir_name}'
+                component_dir = f'{variant_dir}/{binfo.dir_name}'
                 if component.subdir is not None:
                     component_dir += '/' + component.subdir
                 component_friendly_name = (component.friendly_name or

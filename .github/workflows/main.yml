@@ -107,21 +107,21 @@ jobs:
   # Convert our benchmark programs
 
   test_vsftpd_no_alltypes:
-    name: Test Vsftpd (macro-expanded, no -alltypes)
+    name: Test Vsftpd (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build Vsftpd
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
           cd vsftpd-3.0.3
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"
 
       - name: Convert Vsftpd
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -130,13 +130,13 @@ jobs:
 
       - name: Build converted Vsftpd
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/vsftpd-3.0.3
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/vsftpd-3.0.3
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k
 
   test_vsftpd_alltypes:
-    name: Test Vsftpd (macro-expanded, -alltypes)
+    name: Test Vsftpd (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -165,15 +165,74 @@ jobs:
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k || true
 
+  test_vsftpd_expand_macros_no_alltypes:
+    name: Test Vsftpd (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Vsftpd
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
+          cd vsftpd-3.0.3
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"
+
+      - name: Convert Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/vsftpd-3.0.3
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/vsftpd-3.0.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k
+
+  test_vsftpd_expand_macros_alltypes:
+    name: Test Vsftpd (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Vsftpd
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
+          cd vsftpd-3.0.3
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"
+
+      - name: Convert Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted Vsftpd (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k || true
+
   test_ptrdist_no_alltypes:
-    name: Test PtrDist (macro-expanded, no -alltypes)
+    name: Test PtrDist (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build PtrDist
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           for i in anagram bc ft ks yacr2 ; do \
@@ -182,7 +241,7 @@ jobs:
 
       - name: Convert anagram
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -191,14 +250,14 @@ jobs:
 
       - name: Build converted anagram
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/anagram
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
       - name: Convert bc
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -207,14 +266,14 @@ jobs:
 
       - name: Build converted bc
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/bc
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
       - name: Convert ft
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -223,14 +282,14 @@ jobs:
 
       - name: Build converted ft
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ft
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
       - name: Convert ks
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -239,14 +298,14 @@ jobs:
 
       - name: Build converted ks
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/ks
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
       - name: Convert yacr2
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -255,13 +314,13 @@ jobs:
 
       - name: Build converted yacr2
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/ptrdist-1.1/yacr2
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
 
   test_ptrdist_alltypes:
-    name: Test PtrDist (macro-expanded, -alltypes)
+    name: Test PtrDist (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -360,15 +419,210 @@ jobs:
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
+  test_ptrdist_expand_macros_no_alltypes:
+    name: Test PtrDist (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build PtrDist
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
+          cd ptrdist-1.1
+          for i in anagram bc ft ks yacr2 ; do \
+            (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
+          done
+
+      - name: Convert anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/anagram
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/anagram
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
+
+      - name: Convert bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/bc
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/bc
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
+
+      - name: Convert ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ft
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ft
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
+
+      - name: Convert ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ks
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ks
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
+
+      - name: Convert yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/yacr2
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/yacr2
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE"
+
+  test_ptrdist_expand_macros_alltypes:
+    name: Test PtrDist (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build PtrDist
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
+          cd ptrdist-1.1
+          for i in anagram bc ft ks yacr2 ; do \
+            (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
+          done
+
+      - name: Convert anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted anagram (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted bc (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted ft (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted ks (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted yacr2 (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
   test_libarchive_no_alltypes:
-    name: Test LibArchive (macro-expanded, no -alltypes)
+    name: Test LibArchive (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build LibArchive
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
           cd libarchive-3.4.3
           cd build
@@ -377,7 +631,7 @@ jobs:
 
       - name: Convert LibArchive
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
             --expand_macros_before_conversion \
@@ -388,14 +642,14 @@ jobs:
 
       - name: Build converted LibArchive
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/libarchive-3.4.3
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/libarchive-3.4.3
           cp -r out.checked/* .
           rm -r out.checked
           cd build
           ninja -l $(nproc) -k 0 archive
 
   test_libarchive_alltypes:
-    name: Test LibArchive (macro-expanded, -alltypes)
+    name: Test LibArchive (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -429,15 +683,84 @@ jobs:
           cd build
           ninja -l $(nproc) -k 0 archive || true
 
+  test_libarchive_expand_macros_no_alltypes:
+    name: Test LibArchive (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibArchive
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
+          cd libarchive-3.4.3
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+          bear ninja -l $(nproc) archive
+
+      - name: Convert LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/libarchive-3.4.3
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path . \
+            --build_dir build
+
+      - name: Build converted LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/libarchive-3.4.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 archive
+
+  test_libarchive_expand_macros_alltypes:
+    name: Test LibArchive (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibArchive
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
+          cd libarchive-3.4.3
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+          bear ninja -l $(nproc) archive
+
+      - name: Convert LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path . \
+            --build_dir build
+
+      - name: Build converted LibArchive (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 archive || true
+
   test_lua_no_alltypes:
-    name: Test Lua (macro-expanded, no -alltypes)
+    name: Test Lua (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build Lua
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" linux
@@ -449,7 +772,7 @@ jobs:
 
       - name: Convert Lua
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -458,14 +781,14 @@ jobs:
 
       - name: Build converted Lua
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/lua-5.4.1
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux
 
   test_lua_alltypes:
-    name: Test Lua (macro-expanded, -alltypes)
+    name: Test Lua (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -500,15 +823,86 @@ jobs:
           sed -i "s/luac_main/main/" src/luac.c
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux || true
 
+  test_lua_expand_macros_no_alltypes:
+    name: Test Lua (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Lua
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
+          cd lua-5.4.1
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" linux
+          ( cd src ; \
+            clang-rename-10 -pl -i \
+              --qualified-name=main \
+              --new-name=luac_main \
+              luac.c )
+
+      - name: Convert Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/lua-5.4.1
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/lua-5.4.1
+          cp -r out.checked/* .
+          rm -r out.checked
+          sed -i "s/luac_main/main/" src/luac.c
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux
+
+  test_lua_expand_macros_alltypes:
+    name: Test Lua (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Lua
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
+          cd lua-5.4.1
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" linux
+          ( cd src ; \
+            clang-rename-10 -pl -i \
+              --qualified-name=main \
+              --new-name=luac_main \
+              luac.c )
+
+      - name: Convert Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted Lua (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
+          cp -r out.checked/* .
+          rm -r out.checked
+          sed -i "s/luac_main/main/" src/luac.c
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux || true
+
   test_libtiff_no_alltypes:
-    name: Test LibTiff (macro-expanded, no -alltypes)
+    name: Test LibTiff (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build LibTiff
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
           cd tiff-4.1.0
           cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" .
@@ -522,7 +916,7 @@ jobs:
 
       - name: Convert LibTiff
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/tiff-4.1.0
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
@@ -534,13 +928,13 @@ jobs:
 
       - name: Build converted LibTiff
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/tiff-4.1.0
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/tiff-4.1.0
           cp -r out.checked/* .
           rm -r out.checked
           ninja -l $(nproc) -k 0 tiff
 
   test_libtiff_alltypes:
-    name: Test LibTiff (macro-expanded, -alltypes)
+    name: Test LibTiff (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -579,15 +973,94 @@ jobs:
           rm -r out.checked
           ninja -l $(nproc) -k 0 tiff || true
 
+  test_libtiff_expand_macros_no_alltypes:
+    name: Test LibTiff (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibTiff
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
+          cd tiff-4.1.0
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" .
+          bear ninja -l $(nproc) tiff
+          ( cd tools ; \
+            for i in *.c ; do \
+              clang-rename-10 -pl -i \
+                --qualified-name=main \
+                --new-name=$(basename -s .c $i)_main $i ; \
+            done)
+
+      - name: Convert LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/tiff-4.1.0
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/tif_stream.cxx' \
+            --skip '.*/test/.*\.c' \
+            --skip '.*/contrib/.*\.c' \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/tiff-4.1.0
+          cp -r out.checked/* .
+          rm -r out.checked
+          ninja -l $(nproc) -k 0 tiff
+
+  test_libtiff_expand_macros_alltypes:
+    name: Test LibTiff (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibTiff
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
+          cd tiff-4.1.0
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" .
+          bear ninja -l $(nproc) tiff
+          ( cd tools ; \
+            for i in *.c ; do \
+              clang-rename-10 -pl -i \
+                --qualified-name=main \
+                --new-name=$(basename -s .c $i)_main $i ; \
+            done)
+
+      - name: Convert LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/tiff-4.1.0
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/tif_stream.cxx' \
+            --skip '.*/test/.*\.c' \
+            --skip '.*/contrib/.*\.c' \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted LibTiff (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/tiff-4.1.0
+          cp -r out.checked/* .
+          rm -r out.checked
+          ninja -l $(nproc) -k 0 tiff || true
+
   test_zlib_no_alltypes:
-    name: Test ZLib (macro-expanded, no -alltypes)
+    name: Test ZLib (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build ZLib
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
           cd zlib-1.2.11
           mkdir build
@@ -597,7 +1070,7 @@ jobs:
 
       - name: Convert ZLib
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
             --expand_macros_before_conversion \
@@ -608,14 +1081,14 @@ jobs:
 
       - name: Build converted ZLib
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/zlib-1.2.11
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/zlib-1.2.11
           cp -r out.checked/* .
           rm -r out.checked
           cd build
           ninja -l $(nproc) -k 0 zlib
 
   test_zlib_alltypes:
-    name: Test ZLib (macro-expanded, -alltypes)
+    name: Test ZLib (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -650,15 +1123,86 @@ jobs:
           cd build
           ninja -l $(nproc) -k 0 zlib || true
 
+  test_zlib_expand_macros_no_alltypes:
+    name: Test ZLib (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build ZLib
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
+          cd zlib-1.2.11
+          mkdir build
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" ..
+          bear ninja -l $(nproc) zlib
+
+      - name: Convert ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/zlib-1.2.11
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/test/.*' \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path . \
+            --build_dir build
+
+      - name: Build converted ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/zlib-1.2.11
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 zlib
+
+  test_zlib_expand_macros_alltypes:
+    name: Test ZLib (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build ZLib
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
+          cd zlib-1.2.11
+          mkdir build
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" ..
+          bear ninja -l $(nproc) zlib
+
+      - name: Convert ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/test/.*' \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path . \
+            --build_dir build
+
+      - name: Build converted ZLib (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 zlib || true
+
   test_icecast_no_alltypes:
-    name: Test Icecast (macro-expanded, no -alltypes)
+    name: Test Icecast (no -alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build Icecast
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/no-alltypes
-          cd ${{env.benchmark_conv_dir}}/no-alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/no_alltypes
+          cd ${{env.benchmark_conv_dir}}/no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
           CC="${{env.builddir}}/bin/clang" ./configure
@@ -666,7 +1210,7 @@ jobs:
 
       - name: Convert Icecast
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/icecast-2.4.4
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
             --expand_macros_before_conversion \
             --includeDir ${{env.include_dir}} \
@@ -675,13 +1219,13 @@ jobs:
 
       - name: Build converted Icecast
         run: |
-          cd ${{env.benchmark_conv_dir}}/no-alltypes/icecast-2.4.4
+          cd ${{env.benchmark_conv_dir}}/no_alltypes/icecast-2.4.4
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync -k
 
   test_icecast_alltypes:
-    name: Test Icecast (macro-expanded, -alltypes)
+    name: Test Icecast (-alltypes)
     needs: build_3c
     runs-on: self-hosted
     steps:
@@ -707,6 +1251,67 @@ jobs:
       - name: Build converted Icecast (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/alltypes/icecast-2.4.4
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync -k || true
+
+  test_icecast_expand_macros_no_alltypes:
+    name: Test Icecast (macro-expanded, no -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Icecast
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
+          cd icecast-2.4.4
+          CC="${{env.builddir}}/bin/clang" ./configure
+          bear make -j $(nproc) -l $(nproc) --output-sync
+
+      - name: Convert Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/icecast-2.4.4
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --project_path .
+
+      - name: Build converted Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/icecast-2.4.4
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync -k
+
+  test_icecast_expand_macros_alltypes:
+    name: Test Icecast (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Icecast
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
+          cd icecast-2.4.4
+          CC="${{env.builddir}}/bin/clang" ./configure
+          bear make -j $(nproc) -l $(nproc) --output-sync
+
+      - name: Convert Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
+          ${{env.port_tools}}/convert_project.py \
+            --expand_macros_before_conversion \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --project_path .
+
+      - name: Build converted Icecast (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync -k || true
