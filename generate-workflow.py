@@ -213,7 +213,13 @@ benchmarks = [
         name='icecast',
         friendly_name='Icecast',
         dir_name='icecast-2.4.4',
+        # Turn off _GNU_SOURCE to work around the problem with transparent
+        # unions for `struct sockaddr *`
+        # (https://github.com/microsoft/checkedc/issues/441). `configure` was
+        # generated from `configure.in` by autoconf, but we don't want to re-run
+        # autoconf here, so just patch the generated file. :/
         build_cmds=textwrap.dedent(f'''\
+        sed -i '/_GNU_SOURCE/d' configure
         CC="${{{{env.builddir}}}}/bin/clang" ./configure
         bear {make_std}
         '''),
