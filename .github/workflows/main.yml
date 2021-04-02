@@ -238,8 +238,8 @@ jobs:
               src="$(basename "$header" .h).c"
               new_header="$(basename "$header" .h)_code.h"
               test -e "$src" || continue
-              cp "$header" "$new_header"
-              sed -i "s/#include \"$header\"/#include \"$new_header\"/" "$src"
+              sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
+              sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
@@ -336,8 +336,8 @@ jobs:
               src="$(basename "$header" .h).c"
               new_header="$(basename "$header" .h)_code.h"
               test -e "$src" || continue
-              cp "$header" "$new_header"
-              sed -i "s/#include \"$header\"/#include \"$new_header\"/" "$src"
+              sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
+              sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
@@ -439,8 +439,8 @@ jobs:
               src="$(basename "$header" .h).c"
               new_header="$(basename "$header" .h)_code.h"
               test -e "$src" || continue
-              cp "$header" "$new_header"
-              sed -i "s/#include \"$header\"/#include \"$new_header\"/" "$src"
+              sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
+              sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
@@ -542,8 +542,8 @@ jobs:
               src="$(basename "$header" .h).c"
               new_header="$(basename "$header" .h)_code.h"
               test -e "$src" || continue
-              cp "$header" "$new_header"
-              sed -i "s/#include \"$header\"/#include \"$new_header\"/" "$src"
+              sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
+              sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \

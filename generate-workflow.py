@@ -95,21 +95,23 @@ benchmarks = [
         name='ptrdist',
         friendly_name='PtrDist',
         dir_name='ptrdist-1.1',
-        # Patch yacr2 to work around correctcomputation/checkedc-clang#374.
-        # For each header file, the translation unit for the corresponding
-        # source files defines a macro *_CODE that causes the preprocessesor to
-        # take a different branch. To avoid issues that arise when rewriting is
-        # required in both branches in a single file, we create copies of the
-        # header files that are included only by the single source file that
-        # defines the relevant *_CODE macro.
+        # Patch yacr2 to work around correctcomputation/checkedc-clang#374. For
+        # certain header files foo.h, foo.c defines a macro FOO_CODE that
+        # activates a different #if branch in foo.h that defines global
+        # variables instead of declaring them. This is an unusual practice:
+        # normally foo.h would declare the variables whether or not it is being
+        # included by foo.c, and then foo.c would additionally define them. We
+        # simulate the normal practice by copying only the parts of foo.h
+        # conditional on FOO_CODE to a new file foo_code.h, making foo.c include
+        # foo_code.h in addition to foo.h, and deleting the `#define FOO_CODE`.
         build_cmds=textwrap.dedent(f'''\
         ( cd yacr2 ; \\
           for header in *.h  ; do
             src="$(basename "$header" .h).c"
             new_header="$(basename "$header" .h)_code.h"
             test -e "$src" || continue
-            cp "$header" "$new_header"
-            sed -i "s/#include \\"$header\\"/#include \\"$new_header\\"/" "$src"
+            sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{{ /^#/!p; }}' "$header" >"$new_header"
+            sed -i "/#define.*_CODE/d; /#include \\"$header\\"/a#include \\"$new_header\\"" "$src"
           done )
         for i in {' '.join(ptrdist_components)} ; do \\
           (cd $i ; bear {make_checkedc} LOCAL_CFLAGS="-D_ISOC99_SOURCE") \\
