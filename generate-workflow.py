@@ -104,8 +104,12 @@ benchmarks = [
         # simulate the normal practice by copying only the parts of foo.h
         # conditional on FOO_CODE to a new file foo_code.h, making foo.c include
         # foo_code.h in addition to foo.h, and deleting the `#define FOO_CODE`.
+        #
+        # Also fix type conflict between `costMatrix` declaration and
+        # definition, exposed when both are in the same translation unit.
         build_cmds=textwrap.dedent(f'''\
         ( cd yacr2 ; \\
+          sed -Ei 's/^long (.*costMatrix)/ulong \\1/' assign.h
           for header in *.h  ; do
             src="$(basename "$header" .h).c"
             new_header="$(basename "$header" .h)_code.h"
