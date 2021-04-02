@@ -3377,6 +3377,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3419,6 +3420,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes_only_g_sol
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3462,6 +3464,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes_only_l_sol
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3505,6 +3508,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3548,6 +3552,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3591,6 +3596,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes_only_g_sol
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3635,6 +3641,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes_only_l_sol
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
@@ -3679,6 +3686,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
+          sed -i '/_GNU_SOURCE/d' configure
           CC="${{env.builddir}}/bin/clang" ./configure
           bear make -j $(nproc) -l $(nproc) --output-sync
 
