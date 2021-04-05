@@ -156,12 +156,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted Vsftpd (ignore failure)
+      - name: Build converted Vsftpd
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/vsftpd-3.0.3
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k
 
   test_vsftpd_expand_macros_no_alltypes:
     name: Test Vsftpd (macro-expanded, no -alltypes)
@@ -215,12 +215,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted Vsftpd (ignore failure)
+      - name: Build converted Vsftpd
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k
 
   test_ptrdist_no_expand_macros_no_alltypes:
     name: Test PtrDist (not macro-expanded, no -alltypes)
@@ -354,12 +354,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted anagram (ignore failure)
+      - name: Build converted anagram
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert bc
         run: |
@@ -370,12 +370,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted bc (ignore failure)
+      - name: Build converted bc
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert ft
         run: |
@@ -386,12 +386,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted ft (ignore failure)
+      - name: Build converted ft
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert ks
         run: |
@@ -402,12 +402,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted ks (ignore failure)
+      - name: Build converted ks
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert yacr2
         run: |
@@ -418,12 +418,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted yacr2 (ignore failure)
+      - name: Build converted yacr2
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
   test_ptrdist_expand_macros_no_alltypes:
     name: Test PtrDist (macro-expanded, no -alltypes)
@@ -563,12 +563,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted anagram (ignore failure)
+      - name: Build converted anagram
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert bc
         run: |
@@ -580,12 +580,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted bc (ignore failure)
+      - name: Build converted bc
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert ft
         run: |
@@ -597,12 +597,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ft (ignore failure)
+      - name: Build converted ft
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert ks
         run: |
@@ -614,12 +614,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ks (ignore failure)
+      - name: Build converted ks
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
       - name: Convert yacr2
         run: |
@@ -631,12 +631,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted yacr2 (ignore failure)
+      - name: Build converted yacr2
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
 
   test_libarchive_no_expand_macros_no_alltypes:
     name: Test LibArchive (not macro-expanded, no -alltypes)
@@ -697,13 +697,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted LibArchive (ignore failure)
+      - name: Build converted LibArchive
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/libarchive-3.4.3
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 archive || true
+          ninja -l $(nproc) -k 0 archive
 
   test_libarchive_expand_macros_no_alltypes:
     name: Test LibArchive (macro-expanded, no -alltypes)
@@ -766,13 +766,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted LibArchive (ignore failure)
+      - name: Build converted LibArchive
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 archive || true
+          ninja -l $(nproc) -k 0 archive
 
   test_lua_no_expand_macros_no_alltypes:
     name: Test Lua (not macro-expanded, no -alltypes)
@@ -835,13 +835,13 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted Lua (ignore failure)
+      - name: Build converted Lua
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux
 
   test_lua_expand_macros_no_alltypes:
     name: Test Lua (macro-expanded, no -alltypes)
@@ -906,13 +906,13 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted Lua (ignore failure)
+      - name: Build converted Lua
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux || true
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux
 
   test_libtiff_no_expand_macros_no_alltypes:
     name: Test LibTiff (not macro-expanded, no -alltypes)
@@ -984,12 +984,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted LibTiff (ignore failure)
+      - name: Build converted LibTiff
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/tiff-4.1.0
           cp -r out.checked/* .
           rm -r out.checked
-          ninja -l $(nproc) -k 0 tiff || true
+          ninja -l $(nproc) -k 0 tiff
 
   test_libtiff_expand_macros_no_alltypes:
     name: Test LibTiff (macro-expanded, no -alltypes)
@@ -1063,12 +1063,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted LibTiff (ignore failure)
+      - name: Build converted LibTiff
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/tiff-4.1.0
           cp -r out.checked/* .
           rm -r out.checked
-          ninja -l $(nproc) -k 0 tiff || true
+          ninja -l $(nproc) -k 0 tiff
 
   test_zlib_no_expand_macros_no_alltypes:
     name: Test ZLib (not macro-expanded, no -alltypes)
@@ -1131,13 +1131,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted ZLib (ignore failure)
+      - name: Build converted ZLib
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/zlib-1.2.11
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 zlib || true
+          ninja -l $(nproc) -k 0 zlib
 
   test_zlib_expand_macros_no_alltypes:
     name: Test ZLib (macro-expanded, no -alltypes)
@@ -1202,13 +1202,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted ZLib (ignore failure)
+      - name: Build converted ZLib
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 zlib || true
+          ninja -l $(nproc) -k 0 zlib
 
   test_icecast_no_expand_macros_no_alltypes:
     name: Test Icecast (not macro-expanded, no -alltypes)
@@ -1264,12 +1264,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted Icecast (ignore failure)
+      - name: Build converted Icecast
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/icecast-2.4.4
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync -k || true
+          make -j $(nproc) -l $(nproc) --output-sync -k
 
   test_icecast_expand_macros_no_alltypes:
     name: Test Icecast (macro-expanded, no -alltypes)
@@ -1327,9 +1327,9 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted Icecast (ignore failure)
+      - name: Build converted Icecast
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync -k || true
+          make -j $(nproc) -l $(nproc) --output-sync -k
