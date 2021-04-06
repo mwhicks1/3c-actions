@@ -445,6 +445,10 @@ def generate_benchmark_job(out: TextIO,
     benchmark_convert_extra = (ensure_trailing_newline(binfo.convert_extra)
                                if binfo.convert_extra is not None else '')
     build_converted_cmd = binfo.build_converted_cmd.rstrip('\n')
+    at_filter_step = (' (filter bounds inference errors)' if variant.alltypes else '')
+    at_filter_code = ('''\
+ 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py'''
+                      if variant.alltypes else '')
 
     # The blank line below is important: it gets us blank lines between jobs
     # without a blank line at the very end of the workflow file.
@@ -522,7 +526,7 @@ def generate_benchmark_job(out: TextIO,
 
         steps.append(
             RunStep(
-                'Build converted ' + component_friendly_name,
+                'Build converted ' + component_friendly_name + at_filter_step,
                 # convert_project.py sets -output-dir=out.checked as
                 # standard.
                 textwrap.dedent(f'''\
@@ -533,7 +537,7 @@ def generate_benchmark_job(out: TextIO,
                 #
                 (f'cd {component.build_dir}\n'
                  if component.build_dir is not None else '') +
-                f'{build_converted_cmd}\n'))
+                f'{build_converted_cmd}{at_filter_code}\n'))
 
     # We want blank lines between steps but not after the last step of
     # the last benchmark.

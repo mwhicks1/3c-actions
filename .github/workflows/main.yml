@@ -156,12 +156,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted Vsftpd
+      - name: Build converted Vsftpd (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/vsftpd-3.0.3
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_vsftpd_expand_macros_no_alltypes:
     name: Test Vsftpd (macro-expanded, no -alltypes)
@@ -215,12 +215,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted Vsftpd
+      - name: Build converted Vsftpd (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_ptrdist_no_expand_macros_no_alltypes:
     name: Test PtrDist (not macro-expanded, no -alltypes)
@@ -354,12 +354,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted anagram
+      - name: Build converted anagram (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert bc
         run: |
@@ -370,12 +370,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted bc
+      - name: Build converted bc (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert ft
         run: |
@@ -386,12 +386,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted ft
+      - name: Build converted ft (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert ks
         run: |
@@ -402,12 +402,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted ks
+      - name: Build converted ks (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert yacr2
         run: |
@@ -418,12 +418,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted yacr2
+      - name: Build converted yacr2 (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_ptrdist_expand_macros_no_alltypes:
     name: Test PtrDist (macro-expanded, no -alltypes)
@@ -563,12 +563,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted anagram
+      - name: Build converted anagram (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert bc
         run: |
@@ -580,12 +580,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted bc
+      - name: Build converted bc (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert ft
         run: |
@@ -597,12 +597,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ft
+      - name: Build converted ft (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert ks
         run: |
@@ -614,12 +614,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ks
+      - name: Build converted ks (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
       - name: Convert yacr2
         run: |
@@ -631,12 +631,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted yacr2
+      - name: Build converted yacr2 (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_libarchive_no_expand_macros_no_alltypes:
     name: Test LibArchive (not macro-expanded, no -alltypes)
@@ -697,13 +697,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted LibArchive
+      - name: Build converted LibArchive (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/libarchive-3.4.3
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 archive
+          ninja -l $(nproc) -k 0 archive 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_libarchive_expand_macros_no_alltypes:
     name: Test LibArchive (macro-expanded, no -alltypes)
@@ -766,13 +766,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted LibArchive
+      - name: Build converted LibArchive (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 archive
+          ninja -l $(nproc) -k 0 archive 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_lua_no_expand_macros_no_alltypes:
     name: Test Lua (not macro-expanded, no -alltypes)
@@ -835,13 +835,13 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted Lua
+      - name: Build converted Lua (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_lua_expand_macros_no_alltypes:
     name: Test Lua (macro-expanded, no -alltypes)
@@ -906,13 +906,13 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted Lua
+      - name: Build converted Lua (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_libtiff_no_expand_macros_no_alltypes:
     name: Test LibTiff (not macro-expanded, no -alltypes)
@@ -984,12 +984,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted LibTiff
+      - name: Build converted LibTiff (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/tiff-4.1.0
           cp -r out.checked/* .
           rm -r out.checked
-          ninja -l $(nproc) -k 0 tiff
+          ninja -l $(nproc) -k 0 tiff 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_libtiff_expand_macros_no_alltypes:
     name: Test LibTiff (macro-expanded, no -alltypes)
@@ -1063,12 +1063,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted LibTiff
+      - name: Build converted LibTiff (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/tiff-4.1.0
           cp -r out.checked/* .
           rm -r out.checked
-          ninja -l $(nproc) -k 0 tiff
+          ninja -l $(nproc) -k 0 tiff 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_zlib_no_expand_macros_no_alltypes:
     name: Test ZLib (not macro-expanded, no -alltypes)
@@ -1131,13 +1131,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted ZLib
+      - name: Build converted ZLib (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/zlib-1.2.11
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 zlib
+          ninja -l $(nproc) -k 0 zlib 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_zlib_expand_macros_no_alltypes:
     name: Test ZLib (macro-expanded, no -alltypes)
@@ -1202,13 +1202,13 @@ jobs:
             --project_path . \
             --build_dir build
 
-      - name: Build converted ZLib
+      - name: Build converted ZLib (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
           cp -r out.checked/* .
           rm -r out.checked
           cd build
-          ninja -l $(nproc) -k 0 zlib
+          ninja -l $(nproc) -k 0 zlib 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_icecast_no_expand_macros_no_alltypes:
     name: Test Icecast (not macro-expanded, no -alltypes)
@@ -1264,12 +1264,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted Icecast
+      - name: Build converted Icecast (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/icecast-2.4.4
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync -k
+          make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
   test_icecast_expand_macros_no_alltypes:
     name: Test Icecast (macro-expanded, no -alltypes)
@@ -1327,9 +1327,9 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted Icecast
+      - name: Build converted Icecast (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync -k
+          make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
