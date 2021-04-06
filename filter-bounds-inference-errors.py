@@ -20,7 +20,7 @@ FILTER_RE = re.compile(r'expression has unknown bounds')
 saw_unfiltered_error = False
 # This gives the same result as `sys.stdin.readlines()` (which I normally find
 # more explicit) but processes lines as they are received, which is nice for
-# log-running builds.
+# long-running builds.
 for line in sys.stdin:
     line = line.rstrip('\n')
     match = ERROR_LINE_RE.search(line)
