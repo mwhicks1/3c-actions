@@ -16,7 +16,7 @@ import sys
 
 ERROR_LINE_RE = re.compile(r'^(.*): error: (.*)$')
 # We'll add to this list as we confirm that more errors belong on it.
-FILTER_RE = re.compile(r'expression has unknown bounds')
+FILTER_RE = re.compile(r'^expression has unknown bounds$')
 
 saw_unfiltered_error = False
 # This gives the same result as `sys.stdin.readlines()` (which I normally find
