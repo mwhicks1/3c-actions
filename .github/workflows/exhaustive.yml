@@ -233,6 +233,49 @@ jobs:
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_vsftpd_no_expand_macros_alltypes_disable_rds:
+    name: Test Vsftpd (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Vsftpd
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
+          cd vsftpd-3.0.3
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"
+
+      - name: Convert Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/vsftpd-3.0.3
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/vsftpd-3.0.3
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of Vsftpd
+        uses: actions/upload-artifact@v2
+        with:
+          name: Vsftpd_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/vsftpd-3.0.3/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted Vsftpd (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/vsftpd-3.0.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k || true
+
   test_vsftpd_no_expand_macros_alltypes:
     name: Test Vsftpd (not macro-expanded, -alltypes)
     needs: build_3c
@@ -404,6 +447,50 @@ jobs:
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -Wno-enum-conversion" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_vsftpd_expand_macros_alltypes_disable_rds:
+    name: Test Vsftpd (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Vsftpd
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
+          cd vsftpd-3.0.3
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion"
+
+      - name: Convert Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/vsftpd-3.0.3
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of Vsftpd
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/vsftpd-3.0.3
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of Vsftpd
+        uses: actions/upload-artifact@v2
+        with:
+          name: Vsftpd_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/vsftpd-3.0.3/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted Vsftpd (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/vsftpd-3.0.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -Wno-enum-conversion" -k || true
 
   test_vsftpd_expand_macros_alltypes:
     name: Test Vsftpd (macro-expanded, -alltypes)
@@ -959,6 +1046,179 @@ jobs:
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_ptrdist_no_expand_macros_alltypes_disable_rds:
+    name: Test PtrDist (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build PtrDist
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
+          cd ptrdist-1.1
+          ( cd yacr2 ; \
+            for header in *.h  ; do
+              src="$(basename "$header" .h).c"
+              new_header="$(basename "$header" .h)_code.h"
+              test -e "$src" || continue
+              cp "$header" "$new_header"
+              sed -i "s/#include \"$header\"/#include \"$new_header\"/" "$src"
+            done )
+          for i in anagram bc ft ks yacr2 ; do \
+            (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
+          done
+
+      - name: Convert anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of anagram
+        uses: actions/upload-artifact@v2
+        with:
+          name: anagram_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted anagram (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of bc
+        uses: actions/upload-artifact@v2
+        with:
+          name: bc_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/bc/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted bc (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of ft
+        uses: actions/upload-artifact@v2
+        with:
+          name: ft_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ft/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted ft (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of ks
+        uses: actions/upload-artifact@v2
+        with:
+          name: ks_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ks/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted ks (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
+
+      - name: Convert yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of yacr2
+        uses: actions/upload-artifact@v2
+        with:
+          name: yacr2_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted yacr2 (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
   test_ptrdist_no_expand_macros_alltypes:
     name: Test PtrDist (not macro-expanded, -alltypes)
@@ -1656,15 +1916,15 @@ jobs:
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
-  test_ptrdist_expand_macros_alltypes:
-    name: Test PtrDist (macro-expanded, -alltypes)
+  test_ptrdist_expand_macros_alltypes_disable_rds:
+    name: Test PtrDist (macro-expanded, -alltypes, CCured solution)
     needs: build_3c
     runs-on: self-hosted
     steps:
       - name: Build PtrDist
         run: |
-          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
-          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           ( cd yacr2 ; \
@@ -1678,6 +1938,184 @@ jobs:
             done )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-w -D_ISOC99_SOURCE") \
+          done
+
+      - name: Convert anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of anagram
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of anagram
+        uses: actions/upload-artifact@v2
+        with:
+          name: anagram_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted anagram (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+      - name: Convert bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of bc
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of bc
+        uses: actions/upload-artifact@v2
+        with:
+          name: bc_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/bc/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted bc (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+      - name: Convert ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of ft
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of ft
+        uses: actions/upload-artifact@v2
+        with:
+          name: ft_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ft/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted ft (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+      - name: Convert ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of ks
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of ks
+        uses: actions/upload-artifact@v2
+        with:
+          name: ks_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ks/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted ks (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+      - name: Convert yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of yacr2
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of yacr2
+        uses: actions/upload-artifact@v2
+        with:
+          name: yacr2_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted yacr2 (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_ptrdist_expand_macros_alltypes:
+    name: Test PtrDist (macro-expanded, -alltypes)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build PtrDist
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
+          cd ptrdist-1.1
+          ( cd yacr2 ; \
+            for header in *.h  ; do
+              src="$(basename "$header" .h).c"
+              new_header="$(basename "$header" .h)_code.h"
+              test -e "$src" || continue
+              cp "$header" "$new_header"
+              sed -i "s/#include \"$header\"/#include \"$new_header\"/" "$src"
+            done )
+          for i in anagram bc ft ks yacr2 ; do \
+            (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-D_ISOC99_SOURCE") \
           done
 
       - name: Convert anagram
@@ -1703,12 +2141,12 @@ jobs:
           path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram/3c_performance_stats/
           retention-days: 5
 
-      - name: Build converted anagram (filter bounds inference errors)
+      - name: Build converted anagram (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
       - name: Convert bc
         run: |
@@ -1733,12 +2171,12 @@ jobs:
           path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc/3c_performance_stats/
           retention-days: 5
 
-      - name: Build converted bc (filter bounds inference errors)
+      - name: Build converted bc (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
       - name: Convert ft
         run: |
@@ -1763,12 +2201,12 @@ jobs:
           path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft/3c_performance_stats/
           retention-days: 5
 
-      - name: Build converted ft (filter bounds inference errors)
+      - name: Build converted ft (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
       - name: Convert ks
         run: |
@@ -1793,12 +2231,12 @@ jobs:
           path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks/3c_performance_stats/
           retention-days: 5
 
-      - name: Build converted ks (filter bounds inference errors)
+      - name: Build converted ks (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
       - name: Convert yacr2
         run: |
@@ -1823,12 +2261,12 @@ jobs:
           path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2/3c_performance_stats/
           retention-days: 5
 
-      - name: Build converted yacr2 (filter bounds inference errors)
+      - name: Build converted yacr2 (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-D_ISOC99_SOURCE" || true
 
   test_libarchive_no_expand_macros_no_alltypes:
     name: Test LibArchive (not macro-expanded, no -alltypes)
@@ -1971,6 +2409,54 @@ jobs:
           rm -r out.checked
           cd build
           ninja -l $(nproc) -k 0 archive 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_libarchive_no_expand_macros_alltypes_disable_rds:
+    name: Test LibArchive (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibArchive
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
+          cd libarchive-3.4.3
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+          bear ninja -l $(nproc) archive
+
+      - name: Convert LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/libarchive-3.4.3
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path . \
+            --build_dir build
+
+      - name: Copy 3c stats of LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/libarchive-3.4.3
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of LibArchive
+        uses: actions/upload-artifact@v2
+        with:
+          name: LibArchive_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/libarchive-3.4.3/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted LibArchive (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/libarchive-3.4.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 archive || true
 
   test_libarchive_no_expand_macros_alltypes:
     name: Test LibArchive (not macro-expanded, -alltypes)
@@ -2163,6 +2649,55 @@ jobs:
           rm -r out.checked
           cd build
           ninja -l $(nproc) -k 0 archive 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_libarchive_expand_macros_alltypes_disable_rds:
+    name: Test LibArchive (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibArchive
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
+          cd libarchive-3.4.3
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w -D_GNU_SOURCE" ..
+          bear ninja -l $(nproc) archive
+
+      - name: Convert LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/libarchive-3.4.3
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path . \
+            --build_dir build
+
+      - name: Copy 3c stats of LibArchive
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/libarchive-3.4.3
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of LibArchive
+        uses: actions/upload-artifact@v2
+        with:
+          name: LibArchive_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/libarchive-3.4.3/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted LibArchive (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/libarchive-3.4.3
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 archive || true
 
   test_libarchive_expand_macros_alltypes:
     name: Test LibArchive (macro-expanded, -alltypes)
@@ -2357,6 +2892,55 @@ jobs:
           sed -i "s/luac_main/main/" src/luac.c
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_lua_no_expand_macros_alltypes_disable_rds:
+    name: Test Lua (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Lua
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
+          cd lua-5.4.1
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" linux
+          ( cd src ; \
+            clang-rename-10 -pl -i \
+              --qualified-name=main \
+              --new-name=luac_main \
+              luac.c )
+
+      - name: Convert Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/lua-5.4.1
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/lua-5.4.1
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of Lua
+        uses: actions/upload-artifact@v2
+        with:
+          name: Lua_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/lua-5.4.1/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted Lua (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/lua-5.4.1
+          cp -r out.checked/* .
+          rm -r out.checked
+          sed -i "s/luac_main/main/" src/luac.c
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux || true
+
   test_lua_no_expand_macros_alltypes:
     name: Test Lua (not macro-expanded, -alltypes)
     needs: build_3c
@@ -2495,13 +3079,13 @@ jobs:
           path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_only_g_sol/lua-5.4.1/3c_performance_stats/
           retention-days: 5
 
-      - name: Build converted Lua (filter bounds inference errors)
+      - name: Build converted Lua (ignore failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_only_g_sol/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k linux || true
 
   test_lua_expand_macros_alltypes_only_l_sol:
     name: Test Lua (macro-expanded, -alltypes, least solution)
@@ -2514,7 +3098,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_only_l_sol
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
-          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w" linux
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" linux
           ( cd src ; \
             clang-rename-10 -pl -i \
               --qualified-name=main \
@@ -2548,6 +3132,56 @@ jobs:
       - name: Build converted Lua (filter bounds inference errors)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_only_l_sol/lua-5.4.1
+          cp -r out.checked/* .
+          rm -r out.checked
+          sed -i "s/luac_main/main/" src/luac.c
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_lua_expand_macros_alltypes_disable_rds:
+    name: Test Lua (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Lua
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
+          cd lua-5.4.1
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w" linux
+          ( cd src ; \
+            clang-rename-10 -pl -i \
+              --qualified-name=main \
+              --new-name=luac_main \
+              luac.c )
+
+      - name: Convert Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/lua-5.4.1
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of Lua
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/lua-5.4.1
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of Lua
+        uses: actions/upload-artifact@v2
+        with:
+          name: Lua_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/lua-5.4.1/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted Lua (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/lua-5.4.1
           cp -r out.checked/* .
           rm -r out.checked
           sed -i "s/luac_main/main/" src/luac.c
@@ -2758,6 +3392,59 @@ jobs:
           cp -r out.checked/* .
           rm -r out.checked
           ninja -l $(nproc) -k 0 tiff 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_libtiff_no_expand_macros_alltypes_disable_rds:
+    name: Test LibTiff (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibTiff
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
+          cd tiff-4.1.0
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" .
+          bear ninja -l $(nproc) tiff
+          ( cd tools ; \
+            for i in *.c ; do \
+              clang-rename-10 -pl -i \
+                --qualified-name=main \
+                --new-name=$(basename -s .c $i)_main $i ; \
+            done)
+
+      - name: Convert LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiff-4.1.0
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/tif_stream.cxx' \
+            --skip '.*/test/.*\.c' \
+            --skip '.*/contrib/.*\.c' \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiff-4.1.0
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of LibTiff
+        uses: actions/upload-artifact@v2
+        with:
+          name: LibTiff_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiff-4.1.0/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted LibTiff (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiff-4.1.0
+          cp -r out.checked/* .
+          rm -r out.checked
+          ninja -l $(nproc) -k 0 tiff || true
 
   test_libtiff_no_expand_macros_alltypes:
     name: Test LibTiff (not macro-expanded, -alltypes)
@@ -2971,6 +3658,60 @@ jobs:
           rm -r out.checked
           ninja -l $(nproc) -k 0 tiff 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_libtiff_expand_macros_alltypes_disable_rds:
+    name: Test LibTiff (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build LibTiff
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
+          cd tiff-4.1.0
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" .
+          bear ninja -l $(nproc) tiff
+          ( cd tools ; \
+            for i in *.c ; do \
+              clang-rename-10 -pl -i \
+                --qualified-name=main \
+                --new-name=$(basename -s .c $i)_main $i ; \
+            done)
+
+      - name: Convert LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiff-4.1.0
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/tif_stream.cxx' \
+            --skip '.*/test/.*\.c' \
+            --skip '.*/contrib/.*\.c' \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of LibTiff
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiff-4.1.0
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of LibTiff
+        uses: actions/upload-artifact@v2
+        with:
+          name: LibTiff_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiff-4.1.0/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted LibTiff (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiff-4.1.0
+          cp -r out.checked/* .
+          rm -r out.checked
+          ninja -l $(nproc) -k 0 tiff || true
+
   test_libtiff_expand_macros_alltypes:
     name: Test LibTiff (macro-expanded, -alltypes)
     needs: build_3c
@@ -3169,6 +3910,55 @@ jobs:
           cd build
           ninja -l $(nproc) -k 0 zlib 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_zlib_no_expand_macros_alltypes_disable_rds:
+    name: Test ZLib (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build ZLib
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
+          cd zlib-1.2.11
+          mkdir build
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" ..
+          bear ninja -l $(nproc) zlib
+
+      - name: Convert ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/zlib-1.2.11
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/test/.*' \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path . \
+            --build_dir build
+
+      - name: Copy 3c stats of ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/zlib-1.2.11
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of ZLib
+        uses: actions/upload-artifact@v2
+        with:
+          name: ZLib_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/zlib-1.2.11/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted ZLib (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/zlib-1.2.11
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 zlib || true
+
   test_zlib_no_expand_macros_alltypes:
     name: Test ZLib (not macro-expanded, -alltypes)
     needs: build_3c
@@ -3365,6 +4155,56 @@ jobs:
           cd build
           ninja -l $(nproc) -k 0 zlib 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_zlib_expand_macros_alltypes_disable_rds:
+    name: Test ZLib (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build ZLib
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
+          cd zlib-1.2.11
+          mkdir build
+          cd build
+          cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang -G Ninja -DCMAKE_C_FLAGS="-w" ..
+          bear ninja -l $(nproc) zlib
+
+      - name: Convert ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/zlib-1.2.11
+          ${{env.port_tools}}/convert_project.py \
+            --skip '/.*/test/.*' \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path . \
+            --build_dir build
+
+      - name: Copy 3c stats of ZLib
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/zlib-1.2.11
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of ZLib
+        uses: actions/upload-artifact@v2
+        with:
+          name: ZLib_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/zlib-1.2.11/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted ZLib (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/zlib-1.2.11
+          cp -r out.checked/* .
+          rm -r out.checked
+          cd build
+          ninja -l $(nproc) -k 0 zlib || true
+
   test_zlib_expand_macros_alltypes:
     name: Test ZLib (macro-expanded, -alltypes)
     needs: build_3c
@@ -3547,6 +4387,50 @@ jobs:
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_icecast_no_expand_macros_alltypes_disable_rds:
+    name: Test Icecast (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Icecast
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
+          cd icecast-2.4.4
+          CC="${{env.builddir}}/bin/clang" ./configure
+          bear make -j $(nproc) -l $(nproc) --output-sync
+
+      - name: Convert Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/icecast-2.4.4
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/icecast-2.4.4
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of Icecast
+        uses: actions/upload-artifact@v2
+        with:
+          name: Icecast_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/icecast-2.4.4/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted Icecast (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/icecast-2.4.4
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync -k || true
+
   test_icecast_no_expand_macros_alltypes:
     name: Test Icecast (not macro-expanded, -alltypes)
     needs: build_3c
@@ -3726,6 +4610,51 @@ jobs:
           cp -r out.checked/* .
           rm -r out.checked
           make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_icecast_expand_macros_alltypes_disable_rds:
+    name: Test Icecast (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build Icecast
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
+          cd icecast-2.4.4
+          CC="${{env.builddir}}/bin/clang" ./configure
+          bear make -j $(nproc) -l $(nproc) --output-sync
+
+      - name: Convert Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/icecast-2.4.4
+          ${{env.port_tools}}/convert_project.py \
+            --includeDir ${{env.include_dir}} \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of Icecast
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/icecast-2.4.4
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of Icecast
+        uses: actions/upload-artifact@v2
+        with:
+          name: Icecast_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/icecast-2.4.4/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted Icecast (ignore failure)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/icecast-2.4.4
+          cp -r out.checked/* .
+          rm -r out.checked
+          make -j $(nproc) -l $(nproc) --output-sync -k || true
 
   test_icecast_expand_macros_alltypes:
     name: Test Icecast (macro-expanded, -alltypes)
