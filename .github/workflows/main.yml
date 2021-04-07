@@ -254,12 +254,12 @@ jobs:
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
 
-      - name: Build converted anagram
+      - name: Build converted anagram (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo anagram >>${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert bc
         run: |
@@ -269,12 +269,12 @@ jobs:
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
 
-      - name: Build converted bc
+      - name: Build converted bc (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo bc >>${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ft
         run: |
@@ -284,12 +284,12 @@ jobs:
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
 
-      - name: Build converted ft
+      - name: Build converted ft (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo ft >>${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ks
         run: |
@@ -299,12 +299,12 @@ jobs:
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
 
-      - name: Build converted ks
+      - name: Build converted ks (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo ks >>${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert yacr2
         run: |
@@ -314,12 +314,20 @@ jobs:
             --prog_name ${{env.builddir}}/bin/3c \
             --project_path .
 
-      - name: Build converted yacr2
+      - name: Build converted yacr2 (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo yacr2 >>${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
+
+      - name: Check for deferred post-conversion build failures
+        run: |
+          if [ -e ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt ]; then
+              echo 'Failed components (see previous post-conversion build steps):'
+              cat ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
+              exit 1
+          fi
 
   test_ptrdist_no_expand_macros_alltypes:
     name: Test PtrDist (not macro-expanded, -alltypes)
@@ -354,12 +362,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted anagram (filter bounds inference errors)
+      - name: Build converted anagram (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo anagram >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert bc
         run: |
@@ -370,12 +378,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted bc (filter bounds inference errors)
+      - name: Build converted bc (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bc >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ft
         run: |
@@ -386,12 +394,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted ft (filter bounds inference errors)
+      - name: Build converted ft (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ft >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ks
         run: |
@@ -402,12 +410,12 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted ks (filter bounds inference errors)
+      - name: Build converted ks (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ks >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert yacr2
         run: |
@@ -418,12 +426,20 @@ jobs:
             --extra-3c-arg=-alltypes \
             --project_path .
 
-      - name: Build converted yacr2 (filter bounds inference errors)
+      - name: Build converted yacr2 (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo yacr2 >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+
+      - name: Check for deferred post-conversion build failures
+        run: |
+          if [ -e ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt ]; then
+              echo 'Failed components (see previous post-conversion build steps):'
+              cat ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+              exit 1
+          fi
 
   test_ptrdist_expand_macros_no_alltypes:
     name: Test PtrDist (macro-expanded, no -alltypes)
@@ -458,12 +474,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted anagram
+      - name: Build converted anagram (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo anagram >>${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert bc
         run: |
@@ -474,12 +490,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted bc
+      - name: Build converted bc (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo bc >>${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ft
         run: |
@@ -490,12 +506,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ft
+      - name: Build converted ft (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo ft >>${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ks
         run: |
@@ -506,12 +522,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ks
+      - name: Build converted ks (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo ks >>${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert yacr2
         run: |
@@ -522,12 +538,20 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted yacr2
+      - name: Build converted yacr2 (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE"
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" || echo yacr2 >>${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
+
+      - name: Check for deferred post-conversion build failures
+        run: |
+          if [ -e ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt ]; then
+              echo 'Failed components (see previous post-conversion build steps):'
+              cat ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/failed-components-list.txt
+              exit 1
+          fi
 
   test_ptrdist_expand_macros_alltypes:
     name: Test PtrDist (macro-expanded, -alltypes)
@@ -563,12 +587,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted anagram (filter bounds inference errors)
+      - name: Build converted anagram (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo anagram >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert bc
         run: |
@@ -580,12 +604,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted bc (filter bounds inference errors)
+      - name: Build converted bc (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bc >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ft
         run: |
@@ -597,12 +621,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ft (filter bounds inference errors)
+      - name: Build converted ft (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ft >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ks
         run: |
@@ -614,12 +638,12 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted ks (filter bounds inference errors)
+      - name: Build converted ks (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ks >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert yacr2
         run: |
@@ -631,12 +655,20 @@ jobs:
             --expand_macros_before_conversion \
             --project_path .
 
-      - name: Build converted yacr2 (filter bounds inference errors)
+      - name: Build converted yacr2 (filter bounds inference errors) (defer failure)
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           cp -r out.checked/* .
           rm -r out.checked
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo yacr2 >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+
+      - name: Check for deferred post-conversion build failures
+        run: |
+          if [ -e ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt ]; then
+              echo 'Failed components (see previous post-conversion build steps):'
+              cat ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+              exit 1
+          fi
 
   test_libarchive_no_expand_macros_no_alltypes:
     name: Test LibArchive (not macro-expanded, no -alltypes)

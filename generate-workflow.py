@@ -468,6 +468,8 @@ def generate_benchmark_job(out: TextIO,
     steps:
 ''')
 
+    benchmark_dir = f'{subvariant_dir}/{binfo.dir_name}'
+
     full_build_cmds = textwrap.dedent(f'''\
         mkdir -p {subvariant_dir}
         cd {subvariant_dir}
@@ -481,8 +483,10 @@ def generate_benchmark_job(out: TextIO,
     if components is None:
         components = [BenchmarkComponent(binfo.friendly_name)]
 
+    defer_failure = (len(components) > 1)
+    failed_components_fname = f'{benchmark_dir}/failed-components-list.txt'
     for component in components:
-        component_dir = f'{subvariant_dir}/{binfo.dir_name}'
+        component_dir = benchmark_dir
         if component.subdir is not None:
             component_dir += '/' + component.subdir
         component_friendly_name = (component.friendly_name or
@@ -531,9 +535,14 @@ def generate_benchmark_job(out: TextIO,
                         'retention-days': 5
                     }))
 
+        defer_failure_step = (' (defer failure)' if defer_failure else '')
+        defer_failure_code = (f'''\
+ || echo {component_friendly_name} >>{failed_components_fname}'''
+                              if defer_failure else '')
         steps.append(
             RunStep(
-                'Build converted ' + component_friendly_name + at_filter_step,
+                'Build converted ' + component_friendly_name + at_filter_step +
+                defer_failure_step,
                 # convert_project.py sets -output-dir=out.checked as
                 # standard.
                 textwrap.dedent(f'''\
@@ -544,7 +553,18 @@ def generate_benchmark_job(out: TextIO,
                 #
                 (f'cd {component.build_dir}\n'
                  if component.build_dir is not None else '') +
-                f'{build_converted_cmd}{at_filter_code}\n'))
+                f'{build_converted_cmd}{at_filter_code}{defer_failure_code}\n'))
+
+    if defer_failure:
+        steps.append(
+            RunStep(
+                'Check for deferred post-conversion build failures', f'''\
+if [ -e {failed_components_fname} ]; then
+    echo 'Failed components (see previous post-conversion build steps):'
+    cat {failed_components_fname}
+    exit 1
+fi
+'''))
 
     # We want blank lines between steps but not after the last step of
     # the last benchmark.
