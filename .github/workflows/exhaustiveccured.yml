@@ -20,7 +20,6 @@ env:
   builddir: "${{github.workspace}}/b/ninja"
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
   branch_for_scheduled_run: "main"
-  include_dir: "${{github.workspace}}/depsfolder/checkedc-clang/llvm/projects/checkedc-wrapper/checkedc/include"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
 
 jobs:
@@ -126,7 +125,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -168,7 +166,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -210,7 +207,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -253,7 +249,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/vsftpd-3.0.3
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -296,7 +291,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/parson
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -338,7 +332,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/parson
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -380,7 +373,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/parson
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -423,7 +415,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/parson
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -469,7 +460,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/bh
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -499,7 +489,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/bisort
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -529,7 +518,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/em3d
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -559,7 +547,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/health
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -589,7 +576,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/mst
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -619,7 +605,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/perimeter
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -649,7 +634,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/power
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -679,7 +663,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/treeadd
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -709,7 +692,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/tsp
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -739,7 +721,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/Olden/voronoi
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -792,7 +773,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/bh
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -822,7 +802,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/bisort
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -852,7 +831,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/em3d
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -882,7 +860,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/health
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -912,7 +889,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/mst
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -942,7 +918,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/perimeter
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -972,7 +947,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/power
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -1002,7 +976,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/treeadd
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -1032,7 +1005,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/tsp
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -1062,7 +1034,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/Olden/voronoi
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -1115,7 +1086,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/bh
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1146,7 +1116,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/bisort
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1177,7 +1146,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/em3d
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1208,7 +1176,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/health
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1239,7 +1206,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/mst
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1270,7 +1236,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/perimeter
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1301,7 +1266,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/power
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1332,7 +1296,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/treeadd
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1363,7 +1326,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/tsp
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1394,7 +1356,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/Olden/voronoi
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1448,7 +1409,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/bh
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1479,7 +1439,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/bisort
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1510,7 +1469,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/em3d
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1541,7 +1499,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/health
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1572,7 +1529,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/mst
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1603,7 +1559,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/perimeter
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1634,7 +1589,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/power
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1665,7 +1619,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/treeadd
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1696,7 +1649,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/tsp
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1727,7 +1679,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/Olden/voronoi
           ${{env.port_tools}}/convert_project.py \
             --extra-3c-arg=-allow-unwritable-changes \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -1789,7 +1740,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -1818,7 +1768,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -1847,7 +1796,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -1876,7 +1824,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -1905,7 +1852,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -1966,7 +1912,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -1995,7 +1940,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2024,7 +1968,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2053,7 +1996,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2082,7 +2024,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2143,7 +2084,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2173,7 +2113,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2203,7 +2142,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2233,7 +2171,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2263,7 +2200,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2325,7 +2261,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/anagram
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2355,7 +2290,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/bc
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2385,7 +2319,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/ft
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2415,7 +2348,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/ks
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2445,7 +2377,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/ptrdist-1.1/yacr2
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2499,7 +2430,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -2546,7 +2476,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2593,7 +2522,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2641,7 +2569,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/libarchive-3.4.3
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/(test|test_utils|tar|cat|cpio|examples|contrib|libarchive_fe)/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2691,7 +2618,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -2739,7 +2665,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2787,7 +2712,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2836,7 +2760,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/lua-5.4.1
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -2891,7 +2814,6 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -2944,7 +2866,6 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -2997,7 +2918,6 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3051,7 +2971,6 @@ jobs:
             --skip '/.*/tif_stream.cxx' \
             --skip '.*/test/.*\.c' \
             --skip '.*/contrib/.*\.c' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3098,7 +3017,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -3146,7 +3064,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -3194,7 +3111,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3243,7 +3159,6 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/zlib-1.2.11
           ${{env.port_tools}}/convert_project.py \
             --skip '/.*/test/.*' \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3290,7 +3205,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -3334,7 +3248,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -3378,7 +3291,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3423,7 +3335,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/icecast-2.4.4
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3469,7 +3380,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/thttpd-2.29
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-rds \
@@ -3514,7 +3424,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/thttpd-2.29
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --extra-3c-arg=-disable-fnedgs \
@@ -3559,7 +3468,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/thttpd-2.29
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \
@@ -3605,7 +3513,6 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/thttpd-2.29
           ${{env.port_tools}}/convert_project.py \
-            --includeDir ${{env.include_dir}} \
             --prog_name ${{env.builddir}}/bin/3c \
             --extra-3c-arg=-alltypes \
             --expand_macros_before_conversion \

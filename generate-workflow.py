@@ -357,7 +357,6 @@ env:
   builddir: "${{github.workspace}}/b/ninja"
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
   branch_for_scheduled_run: "main"
-  include_dir: "${{github.workspace}}/depsfolder/checkedc-clang/llvm/projects/checkedc-wrapper/checkedc/include"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
 
 jobs:
@@ -592,7 +591,6 @@ def generate_benchmark_job(out: TextIO,
         # yapf: disable
         convert_flags = textwrap.indent(
             benchmark_convert_extra +
-            '--includeDir ${{env.include_dir}} \\\n' +
             '--prog_name ${{env.builddir}}/bin/3c \\\n' +
             subvariant_convert_extra +
             '--project_path .' +
