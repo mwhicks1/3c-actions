@@ -188,20 +188,40 @@ benchmarks = [
         name='ptrdist',
         friendly_name='PtrDist',
         dir_name='ptrdist-1.1',
-        # Patch yacr2 to work around correctcomputation/checkedc-clang#374. For
-        # certain header files foo.h, foo.c defines a macro FOO_CODE that
-        # activates a different #if branch in foo.h that defines global
-        # variables instead of declaring them. This is an unusual practice:
-        # normally foo.h would declare the variables whether or not it is being
-        # included by foo.c, and then foo.c would additionally define them. We
-        # simulate the normal practice by copying only the parts of foo.h
-        # conditional on FOO_CODE to a new file foo_code.h, making foo.c include
-        # foo_code.h in addition to foo.h, and deleting the `#define FOO_CODE`.
+        # yacr2:
         #
-        # Also fix type conflict between `costMatrix` declaration and
-        # definition, exposed when both are in the same translation unit.
+        # - Patch to work around correctcomputation/checkedc-clang#374. For
+        #   certain header files foo.h, foo.c defines a macro FOO_CODE that
+        #   activates a different #if branch in foo.h that defines global
+        #   variables instead of declaring them. This is an unusual practice:
+        #   normally foo.h would declare the variables whether or not it is
+        #   being included by foo.c, and then foo.c would additionally define
+        #   them. We simulate the normal practice by copying only the parts of
+        #   foo.h conditional on FOO_CODE to a new file foo_code.h, making foo.c
+        #   include foo_code.h in addition to foo.h, and deleting the `#define
+        #   FOO_CODE`.
+        #
+        # - Fix type conflict between `costMatrix` declaration and definition,
+        #   exposed when both are in the same translation unit.
+        #
+        # bc:
+        #
+        # - global.h has lines like `EXTERN id_rec * name_tree` that become a
+        #   definition when included by global.c and a declaration (with the
+        #   same PSL) when included by any other translation unit. This confuses
+        #   3C badly. If a declaration comes first, 3C ignores the definition
+        #   because it has the same PSL and constrains the variable to wild,
+        #   hurting the conversion rate. If the definition comes first, then 3C
+        #   tries to make it checked. But per
+        #   correctcomputation/checkedc-clang#374, the last rewrite wins, and
+        #   that will be from a translation unit in which the construct is a
+        #   declaration, so 3C bakes the `extern` keyword into global.h, so
+        #   global.c no longer generates a definition and the post-conversion
+        #   link fails. To get the result we want, we inline the `#include
+        #   "global.h"` in global.c so we have definitions with PSLs different
+        #   from those of the declarations.
         build_cmds=textwrap.dedent(f'''\
-        ( cd yacr2 ; \\
+        ( cd yacr2
           sed -Ei 's/^long (.*costMatrix)/ulong \\1/' assign.h
           for header in *.h  ; do
             src="$(basename "$header" .h).c"
@@ -210,6 +230,9 @@ benchmarks = [
             sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{{ /^#/!p; }}' "$header" >"$new_header"
             sed -i "/#define.*_CODE/d; /#include \\"$header\\"/a#include \\"$new_header\\"" "$src"
           done )
+        ( cd bc
+          sed -i '/^#include "global.h"$/d' global.c
+          cat global.h >>global.c )
         for i in {' '.join(ptrdist_components)} ; do \\
           (cd $i ; bear {make_checkedc} LOCAL_CFLAGS="{common_cflags} -D_ISOC99_SOURCE") \\
         done

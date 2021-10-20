@@ -1720,7 +1720,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
-          ( cd yacr2 ; \
+          ( cd yacr2
             sed -Ei 's/^long (.*costMatrix)/ulong \1/' assign.h
             for header in *.h  ; do
               src="$(basename "$header" .h).c"
@@ -1729,6 +1729,9 @@ jobs:
               sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
               sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
+          ( cd bc
+            sed -i '/^#include "global.h"$/d' global.c
+            cat global.h >>global.c )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE") \
           done
@@ -1892,7 +1895,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
-          ( cd yacr2 ; \
+          ( cd yacr2
             sed -Ei 's/^long (.*costMatrix)/ulong \1/' assign.h
             for header in *.h  ; do
               src="$(basename "$header" .h).c"
@@ -1901,6 +1904,9 @@ jobs:
               sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
               sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
+          ( cd bc
+            sed -i '/^#include "global.h"$/d' global.c
+            cat global.h >>global.c )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE") \
           done
@@ -2064,7 +2070,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
-          ( cd yacr2 ; \
+          ( cd yacr2
             sed -Ei 's/^long (.*costMatrix)/ulong \1/' assign.h
             for header in *.h  ; do
               src="$(basename "$header" .h).c"
@@ -2073,6 +2079,9 @@ jobs:
               sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
               sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
+          ( cd bc
+            sed -i '/^#include "global.h"$/d' global.c
+            cat global.h >>global.c )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE") \
           done
@@ -2241,7 +2250,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
-          ( cd yacr2 ; \
+          ( cd yacr2
             sed -Ei 's/^long (.*costMatrix)/ulong \1/' assign.h
             for header in *.h  ; do
               src="$(basename "$header" .h).c"
@@ -2250,6 +2259,9 @@ jobs:
               sed -ne '/^#ifdef.*CODE/,/#else.*CODE/{ /^#/!p; }' "$header" >"$new_header"
               sed -i "/#define.*_CODE/d; /#include \"$header\"/a#include \"$new_header\"" "$src"
             done )
+          ( cd bc
+            sed -i '/^#include "global.h"$/d' global.c
+            cat global.h >>global.c )
           for i in anagram bc ft ks yacr2 ; do \
             (cd $i ; bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE") \
           done
