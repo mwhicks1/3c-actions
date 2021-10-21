@@ -1,0 +1,3 @@
+category,tag,regex,note
+inprogress,use_undecl,"^use of undeclared","https://github.com/correctcomputation/checkedc-clang/issues/726 or 524"
+

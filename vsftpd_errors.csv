@@ -1,0 +1,5 @@
+category,tag,regex,note
+inprogress,init_incompatible_netfd,"^initializing 'str_netfd_read_t'(.*) with an expression of incompatible type","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,assign_incompatable_netfd,"^assigning to 'str_netfd_read_t'(.*) from incompatible type","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,init_incompatable_global,"^initializing '_Array_ptr<_Nt_array_ptr<char>>' with an expression of incompatible type 'char \*\*'","https://github.com/correctcomputation/checkedc-clang/issues/725 and 507"
+

@@ -1,0 +1,7 @@
+category,tag,regex,note
+inprogress,parameter_incompatible_const_nt,"^passing 'const char(.*) to parameter of incompatible type '_Nt_array_ptr<const char>'","https://github.com/correctcomputation/checkedc-clang/issues/727"
+inprogress,use_undecl_count,"^use of undeclared identifier 'dst'","https://github.com/correctcomputation/checkedc-clang/issues/726"
+inprogress,failed_expectation_assume_bounds,"^expected _Array_ptr type","https://github.com/correctcomputation/checkedc-clang/issues/728"
+inprogress,parameter_incompatible_ternary,"passing 'char \*' to parameter of incompatible type '_Nt_array_ptr<const char>'","https://github.com/correctcomputation/checkedc-clang/issues/729"
+inprogress,parameter_incompatible_struct,"passing '_Array_ptr<struct pollfd>' to parameter of incompatible type 'struct pollfd \*'","https://github.com/correctcomputation/checkedc-clang/issues/731"
+

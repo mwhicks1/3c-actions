@@ -1,0 +1,15 @@
+category,tag,regex,note
+inprogress,assign_incompatible_fnptr,"^assigning to '_Ptr<int \((.*) from incompatible type 'int \(","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,assign_incompatible_fnptr,"^assigning to '_Ptr<size_t \((.*) from incompatible type 'size_t \(","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,init_incompatible_fnptr,"^initializing '_Ptr<int \((.*) with an expression of incompatible type 'int \(\*\)\((.*)","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,parameter_incompatible_fnptr,"^passing 'void \((.*) to parameter of incompatible type '_Ptr<void \((.*)'","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,parameter_incompatible_fnptr,"^passing 'int \((.*) to parameter of incompatible type '_Ptr<int \((.*)'","https://github.com/correctcomputation/checkedc-clang/issues/719"
+inprogress,parameter_incompatible_arr_to_void,"^passing 'uint8_t _Checked\[32\]' to parameter of incompatible type '(const )?void \*'","https://github.com/correctcomputation/checkedc-clang/issues/735"
+inprogress,use_undecl_count,"^use of undeclared identifier","https://github.com/correctcomputation/checkedc-clang/issues/726"
+inprogress,failed_expectation_assume_bounds,"^expected _Array_ptr type","https://github.com/correctcomputation/checkedc-clang/issues/728"
+inprogress,init_incompatible_ternary,"initializing '_Nt_array_ptr<const char>' with an expression of incompatible type 'char \*'","https://github.com/correctcomputation/checkedc-clang/issues/729"
+inprogress,parameter_incompatible_struct,"passing (.*)\(aka '_Ptr<struct(.*) to parameter of incompatible type (.*) \(aka 'struct(.*)","https://github.com/correctcomputation/checkedc-clang/issues/731"
+inprogress,init_incompatible_generic,"^initializing '_Array_ptr<const unsigned char>' with an expression of incompatible type '_Array_ptr<T>'","https://github.com/correctcomputation/checkedc-clang/issues/734"
+inprogress,assign_incompatable_struct,"^assigning to 'int \(\*\)\((.*)type mismatch at 1st parameter","https://github.com/correctcomputation/checkedc-clang/issues/731"
+inprogress,parameter_incompatible_generic,"^passing '_Ptr<T>'","https://github.com/correctcomputation/checkedc-clang/issues/734"
+

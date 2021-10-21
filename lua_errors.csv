@@ -1,0 +1,9 @@
+category,tag,regex,note
+inprogress,assign_incompatible_ternary,"assigning to '_Nt_array_ptr<const char>' from incompatible type 'char \*'","https://github.com/correctcomputation/checkedc-clang/issues/729"
+inprogress,init_incompatible_ternary,"initializing '_Nt_array_ptr<const char>' with an expression of incompatible type 'char \*'","https://github.com/correctcomputation/checkedc-clang/issues/729"
+inprogress,return_incompatible_ternary,"^returning 'char \*' from a function with incompatible result type '_Nt_array_ptr<const char>'","https://github.com/correctcomputation/checkedc-clang/issues/729"
+inprogress,parameter_incompatible_void_opcode,"^passing '_Ptr<const void> const' to parameter of incompatible type 'const void \*'","https://github.com/correctcomputation/checkedc-clang/issues/737"
+inprogress,string_access,"^passing 'char \*' to parameter of incompatible type '_Nt_array_ptr<const char>'","https://github.com/correctcomputation/checkedc-clang/issues/729 and others"
+inprogress,redefinition_array,"^redefinition of 'lua_ident' with a different type","https://github.com/correctcomputation/checkedc-clang/issues/733"
+inprogress,func_array_missing,"^'searchers' declared as array of functions","https://github.com/correctcomputation/checkedc-clang/issues/736"
+

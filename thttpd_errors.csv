@@ -1,0 +1,4 @@
+category,tag,regex,note
+inprogress,use_undecl_count,"^use of undeclared identifier 'npoll_fds'","https://github.com/correctcomputation/checkedc-clang/issues/726"
+inprogress,assign_incompatible_ternary,"assigning to '_Nt_array_ptr<char>' from incompatible type 'char \*'","https://github.com/correctcomputation/checkedc-clang/issues/729"
+

@@ -1,0 +1,4 @@
+category,tag,regex,note
+inprogress,use_undecl_count,"^use of undeclared member 'num_edgeparts'","https://github.com/correctcomputation/checkedc-clang/issues/726"
+inprogress,parameter_incompatible_atoi,"^passing '_Nt_array_ptr<char>' to parameter of incompatible type 'const char \*'","https://github.com/correctcomputation/checkedc-clang/issues/678"
+
