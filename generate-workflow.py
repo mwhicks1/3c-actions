@@ -6,6 +6,7 @@
 # essentially no support for code reuse. :(
 
 from abc import ABC, abstractmethod
+import dataclasses
 from dataclasses import dataclass
 import os
 import textwrap
@@ -18,7 +19,7 @@ from typing import Dict, List, Optional, TextIO, Any
 @dataclass
 class Variant:
     alltypes: bool
-    extra_3c_args: List[str] = ''
+    extra_3c_args: List[str] = dataclasses.field(default_factory=list)
     friendly_name_suffix: str = ''
     is_comparative_varient: bool = False
 
@@ -49,7 +50,7 @@ class BenchmarkInfo:
     # Disallow this benchmark for comparative varients
     disallow_for_comparative_varients: bool = False
 
-    def is_allowed(self, var: Variant):
+    def is_allowed(self, var: Variant) -> bool:
         # Is this a fancy varient?
         return not self.disallow_for_comparative_varients or \
                not var.is_comparative_varient
@@ -475,15 +476,18 @@ HEADER = HEADER.replace('{ninja_std}', ninja_std)
 
 # Apparently Step has to be a dataclass in order for its field declaration to be
 # seen by the dataclass implementation in the subclasses.
-@dataclass
+#
+# Suppress mypy error due to known lack of support for abstract dataclasses
+# (https://github.com/python/mypy/issues/5374).
+@dataclass  # type: ignore[misc]
 class Step(ABC):
     name: str
 
     @abstractmethod
-    def format_body(self):
+    def format_body(self) -> str:
         raise NotImplementedError
 
-    def __str__(self):
+    def __str__(self) -> str:
         step = (f'- name: {self.name}\n' +
                 textwrap.indent(self.format_body(), 2 * ' '))
         return textwrap.indent(step, 6 * ' ')
@@ -493,7 +497,7 @@ class Step(ABC):
 class RunStep(Step):
     run: str  # Trailing newline but not blank line
 
-    def format_body(self):
+    def format_body(self) -> str:
         return 'run: |\n' + textwrap.indent(self.run, 2 * ' ')
 
 
@@ -502,7 +506,7 @@ class ActionStep(Step):
     action_name: str
     args: Dict[str, Any]
 
-    def format_body(self):
+    def format_body(self) -> str:
         formatted_args = ''.join(
             f'{arg_key}: {arg_val}\n' for arg_key, arg_val in self.args.items())
         return (textwrap.dedent(f'''\
@@ -511,7 +515,7 @@ class ActionStep(Step):
         ''') + textwrap.indent(formatted_args, 2 * ' '))
 
 
-def ensure_trailing_newline(s: str):
+def ensure_trailing_newline(s: str) -> str:
     return s + '\n' if s != '' and not s.endswith('\n') else s
 
 
@@ -519,7 +523,7 @@ def generate_benchmark_job(out: TextIO,
                            binfo: BenchmarkInfo,
                            expand_macros: bool,
                            variant: Variant,
-                           generate_stats=False):
+                           generate_stats: bool = False) -> None:
     # Check if this benchmark is allowed for the given varient
     if not binfo.is_allowed(variant):
         return
@@ -593,7 +597,7 @@ def generate_benchmark_job(out: TextIO,
     ''') + apply_patch_cmd + change_dir + ensure_trailing_newline(
         binfo.build_cmds)
 
-    steps = [RunStep('Build ' + binfo.friendly_name, full_build_cmds)]
+    steps: List[Step] = [RunStep('Build ' + binfo.friendly_name, full_build_cmds)]
 
     components = binfo.components
     if components is None:
