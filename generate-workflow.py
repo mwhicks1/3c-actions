@@ -136,8 +136,10 @@ thttpd_make = f'make CC="${{{{env.builddir}}}}/bin/clang {common_cflags}"'
 ptrdist_components = ['anagram', 'bc', 'ft', 'ks', 'yacr2']
 ptrdist_manual_components = ['anagram', 'ft', 'ks', 'yacr2']
 
-olden_components = ['bh', 'bisort', 'em3d', 'health', 'mst',
-                    'perimeter', 'power', 'treeadd', 'tsp', 'voronoi']
+olden_components = [
+    'bh', 'bisort', 'em3d', 'health', 'mst', 'perimeter', 'power', 'treeadd',
+    'tsp', 'voronoi'
+]
 
 # The blank comments below stop YAPF from reformatting things in ways we don't
 # want; large data literals are a known weakness of YAPF
@@ -597,7 +599,9 @@ def generate_benchmark_job(out: TextIO,
     ''') + apply_patch_cmd + change_dir + ensure_trailing_newline(
         binfo.build_cmds)
 
-    steps: List[Step] = [RunStep('Build ' + binfo.friendly_name, full_build_cmds)]
+    steps: List[Step] = [
+        RunStep('Build ' + binfo.friendly_name, full_build_cmds)
+    ]
 
     components = binfo.components
     if components is None:
@@ -707,17 +711,15 @@ workflow_file_configs = [
                    variants=[Variant(alltypes=False),
                              Variant(alltypes=True)],
                    cron_timestamp="0 5 * * *"),
-    WorkflowConfig(
-        filename="exhaustivestats",
-        friendly_name="Exhaustive testing and Performance Stats",
-        variants=[
-            Variant(alltypes=False),
-            Variant(alltypes=True)
-        ],
-        generate_stats=True),
+    WorkflowConfig(filename="exhaustivestats",
+                   friendly_name="Exhaustive testing and Performance Stats",
+                   variants=[Variant(alltypes=False),
+                             Variant(alltypes=True)],
+                   generate_stats=True),
     WorkflowConfig(
         filename="exhaustiveleastgreatest",
-        friendly_name="Exhaustive testing and Performance Stats (Least and Greatest)",
+        friendly_name=
+        "Exhaustive testing and Performance Stats (Least and Greatest)",
         variants=[
             Variant(alltypes=True,
                     extra_3c_args=['-only-g-sol'],
