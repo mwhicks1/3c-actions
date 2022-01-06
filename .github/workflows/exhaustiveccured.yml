@@ -437,6 +437,172 @@ jobs:
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
 
+  test_TinyBigNum_no_expand_macros_alltypes_disable_rds:
+    name: Test TinyBigNum (not macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build TinyBigNum
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiny-bignum-c.tar.gz
+          cd tiny-bignum-c
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
+
+      - name: Convert TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiny-bignum-c
+          ${{env.port_tools}}/convert_project.py \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiny-bignum-c
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of TinyBigNum
+        uses: actions/upload-artifact@v2
+        with:
+          name: TinyBigNum_no_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiny-bignum-c/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted TinyBigNum (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_rds/tiny-bignum-c
+          if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_TinyBigNum_no_expand_macros_alltypes_disable_fnedgs:
+    name: Test TinyBigNum (not macro-expanded, -alltypes, FuncRevEdges solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build TinyBigNum
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiny-bignum-c.tar.gz
+          cd tiny-bignum-c
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
+
+      - name: Convert TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/tiny-bignum-c
+          ${{env.port_tools}}/convert_project.py \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --extra-3c-arg=-disable-fnedgs \
+            --project_path .
+
+      - name: Copy 3c stats of TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/tiny-bignum-c
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of TinyBigNum
+        uses: actions/upload-artifact@v2
+        with:
+          name: TinyBigNum_no_expand_macros_alltypes_disable_fnedgs
+          path: ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/tiny-bignum-c/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted TinyBigNum (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes_disable_fnedgs/tiny-bignum-c
+          if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_TinyBigNum_expand_macros_alltypes_disable_rds:
+    name: Test TinyBigNum (macro-expanded, -alltypes, CCured solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build TinyBigNum
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiny-bignum-c.tar.gz
+          cd tiny-bignum-c
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
+
+      - name: Convert TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiny-bignum-c
+          ${{env.port_tools}}/convert_project.py \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-rds \
+            --project_path .
+
+      - name: Copy 3c stats of TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiny-bignum-c
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of TinyBigNum
+        uses: actions/upload-artifact@v2
+        with:
+          name: TinyBigNum_expand_macros_alltypes_disable_rds
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiny-bignum-c/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted TinyBigNum (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_rds/tiny-bignum-c
+          if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
+  test_TinyBigNum_expand_macros_alltypes_disable_fnedgs:
+    name: Test TinyBigNum (macro-expanded, -alltypes, FuncRevEdges solution)
+    needs: build_3c
+    runs-on: self-hosted
+    steps:
+      - name: Build TinyBigNum
+        run: |
+          mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs
+          tar -xvzf ${{env.benchmark_tar_dir}}/tiny-bignum-c.tar.gz
+          cd tiny-bignum-c
+          bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
+
+      - name: Convert TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/tiny-bignum-c
+          ${{env.port_tools}}/convert_project.py \
+            --prog_name ${{env.builddir}}/bin/3c \
+            --extra-3c-arg=-alltypes \
+            --expand_macros_before_conversion \
+            --extra-3c-arg=-disable-fnedgs \
+            --project_path .
+
+      - name: Copy 3c stats of TinyBigNum
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/tiny-bignum-c
+          mkdir 3c_performance_stats/
+          cp *.json 3c_performance_stats/
+
+      - name: Upload 3c stats of TinyBigNum
+        uses: actions/upload-artifact@v2
+        with:
+          name: TinyBigNum_expand_macros_alltypes_disable_fnedgs
+          path: ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/tiny-bignum-c/3c_performance_stats/
+          retention-days: 5
+
+      - name: Build converted TinyBigNum (filter bounds inference errors)
+        run: |
+          cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes_disable_fnedgs/tiny-bignum-c
+          if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+
   test_Olden_no_expand_macros_alltypes_disable_rds:
     name: Test Olden (not macro-expanded, -alltypes, CCured solution)
     needs: build_3c

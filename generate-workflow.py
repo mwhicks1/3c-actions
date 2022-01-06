@@ -162,6 +162,15 @@ benchmarks = [
         build_cmds=f'bear {make_checkedc}',
         build_converted_cmd=f'{make_checkedc} -k'),
 
+    # bignum
+    BenchmarkInfo(
+        #
+        name='TinyBigNum',
+        friendly_name='TinyBigNum',
+        dir_name='tiny-bignum-c',
+        build_cmds=f'bear {make_checkedc}',
+        build_converted_cmd=f'{make_checkedc} -k'),
+
     # Olden
     BenchmarkInfo(
         #
