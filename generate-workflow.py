@@ -662,27 +662,50 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
                 ''') + convert_flags))
 
         if generate_stats:
-            perf_dir_name = "3c_performance_stats/"
-            steps.append(
-                RunStep(
-                    'Copy 3c stats of ' + component_friendly_name,
-                    textwrap.dedent(f'''\
-                        cd {component_dir}
-                        mkdir {perf_dir_name}
-                        cp *.json {perf_dir_name}
-                    ''')))
             # Same idea as the job name but using the component name instead of
             # the benchmark name.
             perf_artifact_name = f'{component_friendly_name}_{subvariant_name}'
-            perf_dir = os.path.join(component_dir, perf_dir_name)
-            steps.append(
-                ActionStep(
-                    'Upload 3c stats of ' + component_friendly_name,
-                    'actions/upload-artifact@v2', {
-                        'name': perf_artifact_name,
-                        'path': perf_dir,
-                        'retention-days': 5
-                    }))
+            if run_locally:
+                # Put a zip file of the stats in a folder that can be consumed
+                # by our existing stats processing scripts that expect a folder
+                # of artifact zips downloaded by GitHub. (When running via
+                # GitHub, the analogous zipping step is performed as part of the
+                # GitHub artifact system.)
+                #
+                # TODO: Consider changing our stats processing scripts to move
+                # the "extract zips" logic into the GitHub artifact download
+                # step so that when running locally, we can just skip that
+                # step and save the work of zipping and unzipping.
+                all_stats_dir = '${{env.benchmark_conv_dir}}/stats'
+                stats_zip = f'{all_stats_dir}/{perf_artifact_name}.zip'
+                steps.append(
+                    RunStep(
+                        'Save 3c stats of ' + component_friendly_name,
+                        textwrap.dedent(f'''\
+                            cd {component_dir}
+                            mkdir -p {all_stats_dir}
+                            rm -f {stats_zip}
+                            zip {stats_zip} *.json
+                        ''')))
+            else:
+                perf_dir_name = "3c_performance_stats/"
+                steps.append(
+                    RunStep(
+                        'Copy 3c stats of ' + component_friendly_name,
+                        textwrap.dedent(f'''\
+                            cd {component_dir}
+                            mkdir {perf_dir_name}
+                            cp *.json {perf_dir_name}
+                        ''')))
+                perf_dir = os.path.join(component_dir, perf_dir_name)
+                steps.append(
+                    ActionStep(
+                        'Upload 3c stats of ' + component_friendly_name,
+                        'actions/upload-artifact@v2', {
+                            'name': perf_artifact_name,
+                            'path': perf_dir,
+                            'retention-days': 5
+                        }))
 
         defer_failure_step = (' (defer failure)' if defer_failure else '')
         defer_failure_code = (f'''\
