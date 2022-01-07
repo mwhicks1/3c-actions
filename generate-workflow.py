@@ -386,6 +386,7 @@ env:
   branch_for_scheduled_run: "main"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
   clang_rename: "clang-rename-10"
+  actions_repo: "${{github.workspace}}/depsfolder/actions"
 
 jobs:
 
@@ -550,6 +551,8 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
     # flag value before variant. (Better naming ideas?)
     subvariant_name = (('' if expand_macros else 'no_') + 'expand_macros_' +
                        ('' if variant.alltypes else 'no_') + 'alltypes')
+    if args.subvariants != [] and subvariant_name not in args.subvariants:
+        return
 
     subvariant_convert_extra = ''
     if variant.alltypes:
@@ -582,7 +585,7 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
     # might want to turn on `pipefail` in general, in which case we'd need to
     # turn it back off here.
     at_filter_code = ('''\
- 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py'''
+ 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py'''
                       if variant.alltypes else '')
 
     if run_locally:
@@ -612,9 +615,12 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
         cd {binfo.dir_name}
     ''')
 
+    # `rm -rf {binfo.dir_name}` is important when running locally. In the GitHub
+    # workflow, the "Clean" job should take care of it.
     full_build_cmds = textwrap.dedent(f'''\
         mkdir -p {subvariant_dir}
         cd {subvariant_dir}
+        rm -rf {binfo.dir_name}
         tar -xvzf ${{{{env.benchmark_tar_dir}}}}/{binfo.dir_name}.tar.gz
     ''') + apply_patch_cmd + change_dir + ensure_trailing_newline(
         binfo.build_cmds)
@@ -774,6 +780,8 @@ workflow_file_configs = [
 def generate_benchmark_jobs(out: TextIO, config: WorkflowConfig,
                             run_locally: bool) -> None:
     for binfo in benchmarks:
+        if args.benchmarks != [] and binfo.name not in args.benchmarks:
+            continue
         for expand_macros in (False, True):
             for variant in config.variants:
                 generate_benchmark_job(out, binfo, expand_macros, variant,
@@ -783,7 +791,13 @@ def generate_benchmark_jobs(out: TextIO, config: WorkflowConfig,
 parser = argparse.ArgumentParser(
     description=
     'Generate GitHub workflows or local scripts to run the 3C benchmark tests.')
-parser.set_defaults(run_locally=False)
+parser.set_defaults(
+    run_locally=False,
+    # An empty list means all benchmarks or subvariants. Establish these
+    # defaults even when not generating a custom local script to reduce the
+    # number of special cases we need elsewhere.
+    benchmarks=[],
+    subvariants=[])
 subparsers = parser.add_subparsers(
     # When no subcommand is specified, we generate the GitHub workflows as
     # always.
@@ -791,9 +805,15 @@ subparsers = parser.add_subparsers(
 
 parser_local = subparsers.add_parser(
     'local',
-    help=('Generate a script to run the benchmarks locally '
-          'instead of a GitHub workflow.'))
+    help=('Generate a script to run benchmark(s) locally '
+          'instead of generating all GitHub workflows.'))
 parser_local.set_defaults(run_locally=True)
+
+parser_local.add_argument('--output',
+                          dest='out_fname',
+                          required=True,
+                          help='Filename of the script to be written.')
+
 # Information that we need in order to run benchmarks locally.
 # TODO: Consider the alternative design of generating a script that references
 # environment variables to be set when the script is run?
@@ -825,6 +845,34 @@ parser_local.add_argument(
     help=('For certain auxiliary tools (currently: clang-rename), '
           'look in the specified 3C build directory instead of on $PATH.'))
 
+# Flags that select what to run.
+parser_local.add_argument('--workflow-config',
+                          dest='workflow_config',
+                          type=str,
+                          required=True,
+                          help='Workflow configuration (e.g., "main") to use.')
+parser_local.add_argument(
+    '--benchmark',
+    dest='benchmarks',
+    action='append',
+    type=str,
+    default=[],
+    help=(
+        'Run only the specified benchmark (e.g., "vsftpd") '
+        'instead of all of them. '
+        'Multiple --benchmark options can be used to run multiple benchmarks.'))
+parser_local.add_argument(
+    '--subvariant',
+    dest='subvariants',
+    action='append',
+    type=str,
+    default=[],
+    help=(
+        'Run only the specified subvariant '
+        '(e.g., "no_expand_macros_no_alltypes") instead of all of them. '
+        'Multiple --subvariant options can be used to run multiple subvariants.'
+    ))
+
 args = parser.parse_args()
 
 
@@ -855,38 +903,52 @@ def generate_local_script(config: WorkflowConfig) -> None:
     tmp_out = io.StringIO()
     tmp_out.write(f'''\
 #!/bin/bash
-# This script was generated by `generate-workflow.py local`.
+# This script was generated by `generate-workflow.py local` but may be manually
+# edited by a user for customization.
+#
+# Workflow configuration name: {config.filename}
 ''')
     generate_benchmark_jobs(tmp_out, config, True)
     script = tmp_out.getvalue()
 
     def get_extra_tool_path(name: str) -> str:
-        return os.path.join(args._3c_build_dir, 'bin',
-                            name) if args.use_built_extra_tools else name
+        return (os.path.join(os.path.abspath(args._3c_build_dir), 'bin', name)
+                if args.use_built_extra_tools else name)
 
     env_replacements = {
-        'benchmark_tar_dir': args.checkedc_benchmarks_dir,
-        'benchmark_conv_dir': args.work_dir,
-        'builddir': args._3c_build_dir,
-        'port_tools': args._3c_source_dir + '/clang/tools/3c/utils/port_tools',
+        'actions_repo':
+            os.path.dirname(os.path.realpath(__file__)),
+        'benchmark_tar_dir':
+            os.path.abspath(args.checkedc_benchmarks_dir),
+        'benchmark_conv_dir':
+            os.path.abspath(args.work_dir),
+        'builddir':
+            os.path.abspath(args._3c_build_dir),
+        'port_tools':
+            os.path.abspath(args._3c_source_dir) +
+            '/clang/tools/3c/utils/port_tools',
         # Currently, unlike the GitHub workflow, we default to `clang-rename`
         # rather than `clang-rename-10` when --use-built-extra-tools is off.
-        'clang_rename': get_extra_tool_path('clang-rename')
+        'clang_rename':
+            get_extra_tool_path('clang-rename')
     }
     for k, v in env_replacements.items():
         script = script.replace('${{env.' + k + '}}', v)
 
-    with open(f'{config.filename}-local.sh', 'w',
-              opener=executable_file_opener) as out:
+    with open(args.out_fname, 'w', opener=executable_file_opener) as out:
         out.write(script)
 
 
-for config in workflow_file_configs:
-    if args.run_locally:
-        if config.generate_stats:
-            sys.stderr.write(f'Warning: Skipping {config.filename} because '
-                             'stats generation is not yet supported.\n')
-        else:
-            generate_local_script(config)
-    else:
+if args.run_locally:
+    matching_configs = [
+        c for c in workflow_file_configs if c.filename == args.workflow_config
+    ]
+    if len(matching_configs) == 0:
+        sys.exit(
+            f'Error: No such workflow configuration "{args.workflow_config}".')
+    # TODO: Warn the user if a nonexistent --benchmark or --subvariant is
+    # specified? It's nontrivial to get the list of valid subvariant names here.
+    generate_local_script(matching_configs[0])
+else:
+    for config in workflow_file_configs:
         generate_github_workflow(config)
