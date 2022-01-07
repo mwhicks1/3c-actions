@@ -106,6 +106,11 @@ cmake_checkedc = 'cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang'
 # benchmarks that we don't factor out anything more here.
 common_cflags = '-w -ferror-limit=0'
 
+stats_filenames = [
+    'PerWildPtrStats.json', 'TotalConstraintStats.json.aggregate.json',
+    'TotalConstraintStats.json', 'WildPtrStats.json'
+]
+
 # There is a known incompatibility between the vsftpd version we're using and
 # Clang: vsftpd triggers a -Wenum-conversion warning that becomes an error with
 # -Werror. See, for example:
@@ -685,7 +690,7 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
                             cd {component_dir}
                             mkdir -p {all_stats_dir}
                             rm -f {stats_zip}
-                            zip {stats_zip} *.json
+                            zip {stats_zip} {' '.join(stats_filenames)}
                         ''')))
             else:
                 perf_dir_name = "3c_performance_stats/"
@@ -695,7 +700,7 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
                         textwrap.dedent(f'''\
                             cd {component_dir}
                             mkdir {perf_dir_name}
-                            cp *.json {perf_dir_name}
+                            cp {' '.join(stats_filenames)} {perf_dir_name}
                         ''')))
                 perf_dir = os.path.join(component_dir, perf_dir_name)
                 steps.append(

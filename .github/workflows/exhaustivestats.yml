@@ -132,7 +132,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/vsftpd-3.0.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Vsftpd
         uses: actions/upload-artifact@v2
@@ -173,7 +173,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/vsftpd-3.0.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Vsftpd
         uses: actions/upload-artifact@v2
@@ -214,7 +214,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/vsftpd-3.0.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Vsftpd
         uses: actions/upload-artifact@v2
@@ -256,7 +256,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Vsftpd
         uses: actions/upload-artifact@v2
@@ -296,7 +296,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/parson
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Parson
         uses: actions/upload-artifact@v2
@@ -337,7 +337,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/parson
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Parson
         uses: actions/upload-artifact@v2
@@ -378,7 +378,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/parson
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Parson
         uses: actions/upload-artifact@v2
@@ -420,7 +420,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/parson
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Parson
         uses: actions/upload-artifact@v2
@@ -463,7 +463,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/bh
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bh
         uses: actions/upload-artifact@v2
@@ -490,7 +490,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/bisort
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bisort
         uses: actions/upload-artifact@v2
@@ -517,7 +517,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/em3d
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of em3d
         uses: actions/upload-artifact@v2
@@ -544,7 +544,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/health
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of health
         uses: actions/upload-artifact@v2
@@ -571,7 +571,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/mst
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of mst
         uses: actions/upload-artifact@v2
@@ -598,7 +598,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/perimeter
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of perimeter
         uses: actions/upload-artifact@v2
@@ -625,7 +625,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/power
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of power
         uses: actions/upload-artifact@v2
@@ -652,7 +652,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/treeadd
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of treeadd
         uses: actions/upload-artifact@v2
@@ -679,7 +679,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/tsp
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of tsp
         uses: actions/upload-artifact@v2
@@ -706,7 +706,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/Olden/voronoi
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of voronoi
         uses: actions/upload-artifact@v2
@@ -758,7 +758,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/bh
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bh
         uses: actions/upload-artifact@v2
@@ -786,7 +786,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/bisort
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bisort
         uses: actions/upload-artifact@v2
@@ -814,7 +814,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/em3d
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of em3d
         uses: actions/upload-artifact@v2
@@ -842,7 +842,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/health
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of health
         uses: actions/upload-artifact@v2
@@ -870,7 +870,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/mst
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of mst
         uses: actions/upload-artifact@v2
@@ -898,7 +898,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/perimeter
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of perimeter
         uses: actions/upload-artifact@v2
@@ -926,7 +926,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/power
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of power
         uses: actions/upload-artifact@v2
@@ -954,7 +954,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/treeadd
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of treeadd
         uses: actions/upload-artifact@v2
@@ -982,7 +982,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/tsp
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of tsp
         uses: actions/upload-artifact@v2
@@ -1010,7 +1010,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/voronoi
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of voronoi
         uses: actions/upload-artifact@v2
@@ -1062,7 +1062,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/bh
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bh
         uses: actions/upload-artifact@v2
@@ -1090,7 +1090,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/bisort
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bisort
         uses: actions/upload-artifact@v2
@@ -1118,7 +1118,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/em3d
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of em3d
         uses: actions/upload-artifact@v2
@@ -1146,7 +1146,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/health
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of health
         uses: actions/upload-artifact@v2
@@ -1174,7 +1174,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/mst
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of mst
         uses: actions/upload-artifact@v2
@@ -1202,7 +1202,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/perimeter
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of perimeter
         uses: actions/upload-artifact@v2
@@ -1230,7 +1230,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/power
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of power
         uses: actions/upload-artifact@v2
@@ -1258,7 +1258,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/treeadd
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of treeadd
         uses: actions/upload-artifact@v2
@@ -1286,7 +1286,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/tsp
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of tsp
         uses: actions/upload-artifact@v2
@@ -1314,7 +1314,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/Olden/voronoi
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of voronoi
         uses: actions/upload-artifact@v2
@@ -1367,7 +1367,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/bh
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bh
         uses: actions/upload-artifact@v2
@@ -1396,7 +1396,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/bisort
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bisort
         uses: actions/upload-artifact@v2
@@ -1425,7 +1425,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/em3d
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of em3d
         uses: actions/upload-artifact@v2
@@ -1454,7 +1454,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/health
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of health
         uses: actions/upload-artifact@v2
@@ -1483,7 +1483,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/mst
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of mst
         uses: actions/upload-artifact@v2
@@ -1512,7 +1512,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/perimeter
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of perimeter
         uses: actions/upload-artifact@v2
@@ -1541,7 +1541,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/power
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of power
         uses: actions/upload-artifact@v2
@@ -1570,7 +1570,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/treeadd
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of treeadd
         uses: actions/upload-artifact@v2
@@ -1599,7 +1599,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/tsp
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of tsp
         uses: actions/upload-artifact@v2
@@ -1628,7 +1628,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/voronoi
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of voronoi
         uses: actions/upload-artifact@v2
@@ -1690,7 +1690,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/anagram
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of anagram
         uses: actions/upload-artifact@v2
@@ -1716,7 +1716,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/bc
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bc
         uses: actions/upload-artifact@v2
@@ -1742,7 +1742,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/ft
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ft
         uses: actions/upload-artifact@v2
@@ -1768,7 +1768,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/ks
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ks
         uses: actions/upload-artifact@v2
@@ -1794,7 +1794,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/ptrdist-1.1/yacr2
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of yacr2
         uses: actions/upload-artifact@v2
@@ -1857,7 +1857,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/anagram
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of anagram
         uses: actions/upload-artifact@v2
@@ -1884,7 +1884,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/bc
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bc
         uses: actions/upload-artifact@v2
@@ -1911,7 +1911,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ft
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ft
         uses: actions/upload-artifact@v2
@@ -1938,7 +1938,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ks
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ks
         uses: actions/upload-artifact@v2
@@ -1965,7 +1965,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/yacr2
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of yacr2
         uses: actions/upload-artifact@v2
@@ -2028,7 +2028,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/anagram
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of anagram
         uses: actions/upload-artifact@v2
@@ -2055,7 +2055,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/bc
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bc
         uses: actions/upload-artifact@v2
@@ -2082,7 +2082,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ft
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ft
         uses: actions/upload-artifact@v2
@@ -2109,7 +2109,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/ks
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ks
         uses: actions/upload-artifact@v2
@@ -2136,7 +2136,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/ptrdist-1.1/yacr2
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of yacr2
         uses: actions/upload-artifact@v2
@@ -2200,7 +2200,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of anagram
         uses: actions/upload-artifact@v2
@@ -2228,7 +2228,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of bc
         uses: actions/upload-artifact@v2
@@ -2256,7 +2256,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ft
         uses: actions/upload-artifact@v2
@@ -2284,7 +2284,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ks
         uses: actions/upload-artifact@v2
@@ -2312,7 +2312,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of yacr2
         uses: actions/upload-artifact@v2
@@ -2364,7 +2364,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/libarchive-3.4.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibArchive
         uses: actions/upload-artifact@v2
@@ -2410,7 +2410,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/libarchive-3.4.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibArchive
         uses: actions/upload-artifact@v2
@@ -2456,7 +2456,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/libarchive-3.4.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibArchive
         uses: actions/upload-artifact@v2
@@ -2503,7 +2503,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibArchive
         uses: actions/upload-artifact@v2
@@ -2549,7 +2549,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/lua-5.4.1
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Lua
         uses: actions/upload-artifact@v2
@@ -2596,7 +2596,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/lua-5.4.1
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Lua
         uses: actions/upload-artifact@v2
@@ -2643,7 +2643,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/lua-5.4.1
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Lua
         uses: actions/upload-artifact@v2
@@ -2691,7 +2691,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Lua
         uses: actions/upload-artifact@v2
@@ -2743,7 +2743,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/tiff-4.1.0
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibTiff
         uses: actions/upload-artifact@v2
@@ -2795,7 +2795,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/tiff-4.1.0
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibTiff
         uses: actions/upload-artifact@v2
@@ -2847,7 +2847,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/tiff-4.1.0
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibTiff
         uses: actions/upload-artifact@v2
@@ -2900,7 +2900,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/tiff-4.1.0
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of LibTiff
         uses: actions/upload-artifact@v2
@@ -2945,7 +2945,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/zlib-1.2.11
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ZLib
         uses: actions/upload-artifact@v2
@@ -2992,7 +2992,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/zlib-1.2.11
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ZLib
         uses: actions/upload-artifact@v2
@@ -3039,7 +3039,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/zlib-1.2.11
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ZLib
         uses: actions/upload-artifact@v2
@@ -3087,7 +3087,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of ZLib
         uses: actions/upload-artifact@v2
@@ -3130,7 +3130,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/icecast-2.4.4
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Icecast
         uses: actions/upload-artifact@v2
@@ -3173,7 +3173,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/icecast-2.4.4
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Icecast
         uses: actions/upload-artifact@v2
@@ -3216,7 +3216,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/icecast-2.4.4
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Icecast
         uses: actions/upload-artifact@v2
@@ -3260,7 +3260,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Icecast
         uses: actions/upload-artifact@v2
@@ -3303,7 +3303,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes/thttpd-2.29
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Thttpd
         uses: actions/upload-artifact@v2
@@ -3347,7 +3347,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/thttpd-2.29
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Thttpd
         uses: actions/upload-artifact@v2
@@ -3391,7 +3391,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes/thttpd-2.29
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Thttpd
         uses: actions/upload-artifact@v2
@@ -3436,7 +3436,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/thttpd-2.29
           mkdir 3c_performance_stats/
-          cp *.json 3c_performance_stats/
+          cp PerWildPtrStats.json TotalConstraintStats.json.aggregate.json TotalConstraintStats.json WildPtrStats.json 3c_performance_stats/
 
       - name: Upload 3c stats of Thttpd
         uses: actions/upload-artifact@v2
