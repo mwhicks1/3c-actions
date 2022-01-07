@@ -6,10 +6,14 @@
 # essentially no support for code reuse. :(
 
 from abc import ABC, abstractmethod
+import argparse
+import dataclasses
 from dataclasses import dataclass
+import io
 import os
+import sys
 import textwrap
-from typing import Dict, List, Optional, TextIO, Any
+from typing import Dict, List, NoReturn, Optional, TextIO, Any
 
 
 # To make `WorkflowConfig` definitions more concise, this `Variant` class does
@@ -18,7 +22,7 @@ from typing import Dict, List, Optional, TextIO, Any
 @dataclass
 class Variant:
     alltypes: bool
-    extra_3c_args: List[str] = ''
+    extra_3c_args: List[str] = dataclasses.field(default_factory=list)
     friendly_name_suffix: str = ''
     is_comparative_varient: bool = False
 
@@ -49,7 +53,7 @@ class BenchmarkInfo:
     # Disallow this benchmark for comparative varients
     disallow_for_comparative_varients: bool = False
 
-    def is_allowed(self, var: Variant):
+    def is_allowed(self, var: Variant) -> bool:
         # Is this a fancy varient?
         return not self.disallow_for_comparative_varients or \
                not var.is_comparative_varient
@@ -102,6 +106,11 @@ cmake_checkedc = 'cmake -DCMAKE_C_COMPILER=${{env.builddir}}/bin/clang'
 # benchmarks that we don't factor out anything more here.
 common_cflags = '-w -ferror-limit=0'
 
+stats_filenames = [
+    'PerWildPtrStats.json', 'TotalConstraintStats.json.aggregate.json',
+    'TotalConstraintStats.json', 'WildPtrStats.json'
+]
+
 # There is a known incompatibility between the vsftpd version we're using and
 # Clang: vsftpd triggers a -Wenum-conversion warning that becomes an error with
 # -Werror. See, for example:
@@ -135,8 +144,10 @@ thttpd_make = f'make CC="${{{{env.builddir}}}}/bin/clang {common_cflags}"'
 ptrdist_components = ['anagram', 'bc', 'ft', 'ks', 'yacr2']
 ptrdist_manual_components = ['anagram', 'ft', 'ks', 'yacr2']
 
-olden_components = ['bh', 'bisort', 'em3d', 'health', 'mst',
-                    'perimeter', 'power', 'treeadd', 'tsp', 'voronoi']
+olden_components = [
+    'bh', 'bisort', 'em3d', 'health', 'mst', 'perimeter', 'power', 'treeadd',
+    'tsp', 'voronoi'
+]
 
 # The blank comments below stop YAPF from reformatting things in ways we don't
 # want; large data literals are a known weakness of YAPF
@@ -271,7 +282,7 @@ benchmarks = [
         build_cmds=textwrap.dedent(f'''\
         bear {make_checkedc} CFLAGS="{common_cflags}" linux
         ( cd src ; \\
-          clang-rename-10 -pl -i \\
+          ${{{{env.clang_rename}}}} -pl -i \\
             --qualified-name=main \\
             --new-name=luac_main \\
             luac.c )
@@ -296,7 +307,7 @@ benchmarks = [
         bear {ninja_std} tiff
         ( cd tools ; \\
           for i in *.c ; do \\
-            clang-rename-10 -pl -i \\
+            ${{{{env.clang_rename}}}} -pl -i \\
               --qualified-name=main \\
               --new-name=$(basename -s .c $i)_main $i ; \\
           done)
@@ -379,6 +390,8 @@ env:
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
   branch_for_scheduled_run: "main"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
+  clang_rename: "clang-rename-10"
+  actions_repo: "${{github.workspace}}/depsfolder/actions"
 
 jobs:
 
@@ -475,26 +488,36 @@ HEADER = HEADER.replace('{ninja_std}', ninja_std)
 
 # Apparently Step has to be a dataclass in order for its field declaration to be
 # seen by the dataclass implementation in the subclasses.
-@dataclass
+#
+# Suppress mypy error due to known lack of support for abstract dataclasses
+# (https://github.com/python/mypy/issues/5374).
+@dataclass  # type: ignore[misc]
 class Step(ABC):
     name: str
 
     @abstractmethod
-    def format_body(self):
+    def format_body(self) -> str:
         raise NotImplementedError
 
-    def __str__(self):
+    def __str__(self) -> str:
         step = (f'- name: {self.name}\n' +
                 textwrap.indent(self.format_body(), 2 * ' '))
         return textwrap.indent(step, 6 * ' ')
+
+    @abstractmethod
+    def format_local(self) -> str:
+        raise NotImplementedError
 
 
 @dataclass
 class RunStep(Step):
     run: str  # Trailing newline but not blank line
 
-    def format_body(self):
+    def format_body(self) -> str:
         return 'run: |\n' + textwrap.indent(self.run, 2 * ' ')
+
+    def format_local(self) -> str:
+        return f'\n## {self.name}\n{self.run}'
 
 
 @dataclass
@@ -502,7 +525,7 @@ class ActionStep(Step):
     action_name: str
     args: Dict[str, Any]
 
-    def format_body(self):
+    def format_body(self) -> str:
         formatted_args = ''.join(
             f'{arg_key}: {arg_val}\n' for arg_key, arg_val in self.args.items())
         return (textwrap.dedent(f'''\
@@ -510,16 +533,20 @@ class ActionStep(Step):
             with:
         ''') + textwrap.indent(formatted_args, 2 * ' '))
 
+    def format_local(self) -> str:
+        # This is good enough for workflows that don't generate stats. We'll
+        # figure out later how to handle stats locally.
+        raise NotImplementedError(
+            "ActionStep currently isn't supported locally.")
 
-def ensure_trailing_newline(s: str):
+
+def ensure_trailing_newline(s: str) -> str:
     return s + '\n' if s != '' and not s.endswith('\n') else s
 
 
-def generate_benchmark_job(out: TextIO,
-                           binfo: BenchmarkInfo,
-                           expand_macros: bool,
-                           variant: Variant,
-                           generate_stats=False):
+def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
+                           expand_macros: bool, variant: Variant,
+                           generate_stats: bool, run_locally: bool) -> None:
     # Check if this benchmark is allowed for the given varient
     if not binfo.is_allowed(variant):
         return
@@ -529,6 +556,8 @@ def generate_benchmark_job(out: TextIO,
     # flag value before variant. (Better naming ideas?)
     subvariant_name = (('' if expand_macros else 'no_') + 'expand_macros_' +
                        ('' if variant.alltypes else 'no_') + 'alltypes')
+    if args.subvariants != [] and subvariant_name not in args.subvariants:
+        return
 
     subvariant_convert_extra = ''
     if variant.alltypes:
@@ -561,12 +590,17 @@ def generate_benchmark_job(out: TextIO,
     # might want to turn on `pipefail` in general, in which case we'd need to
     # turn it back off here.
     at_filter_code = ('''\
- 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py'''
+ 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py'''
                       if variant.alltypes else '')
 
-    # The blank line below is important: it gets us blank lines between jobs
-    # without a blank line at the very end of the workflow file.
-    out.write(f'''\
+    if run_locally:
+        # Add a blank line before each job, whether it is preceded by another
+        # job or the file header.
+        out.write(f'\n# Test {binfo.friendly_name} ({subvariant_friendly})\n')
+    else:
+        # The blank line below is important: it gets us blank lines between jobs
+        # without a blank line at the very end of the workflow file.
+        out.write(f'''\
 
   test_{binfo.name}_{subvariant_name}:
     name: Test {binfo.friendly_name} ({subvariant_friendly})
@@ -586,14 +620,19 @@ def generate_benchmark_job(out: TextIO,
         cd {binfo.dir_name}
     ''')
 
+    # `rm -rf {binfo.dir_name}` is important when running locally. In the GitHub
+    # workflow, the "Clean" job should take care of it.
     full_build_cmds = textwrap.dedent(f'''\
         mkdir -p {subvariant_dir}
         cd {subvariant_dir}
+        rm -rf {binfo.dir_name}
         tar -xvzf ${{{{env.benchmark_tar_dir}}}}/{binfo.dir_name}.tar.gz
     ''') + apply_patch_cmd + change_dir + ensure_trailing_newline(
         binfo.build_cmds)
 
-    steps = [RunStep('Build ' + binfo.friendly_name, full_build_cmds)]
+    steps: List[Step] = [
+        RunStep('Build ' + binfo.friendly_name, full_build_cmds)
+    ]
 
     components = binfo.components
     if components is None:
@@ -628,48 +667,73 @@ def generate_benchmark_job(out: TextIO,
                 ''') + convert_flags))
 
         if generate_stats:
-            perf_dir_name = "3c_performance_stats/"
-            steps.append(
-                RunStep(
-                    'Copy 3c stats of ' + component_friendly_name,
-                    textwrap.dedent(f'''\
-                        cd {component_dir}
-                        mkdir {perf_dir_name}
-                        cp *.json {perf_dir_name}
-                    ''')))
             # Same idea as the job name but using the component name instead of
             # the benchmark name.
             perf_artifact_name = f'{component_friendly_name}_{subvariant_name}'
-            perf_dir = os.path.join(component_dir, perf_dir_name)
-            steps.append(
-                ActionStep(
-                    'Upload 3c stats of ' + component_friendly_name,
-                    'actions/upload-artifact@v2', {
-                        'name': perf_artifact_name,
-                        'path': perf_dir,
-                        'retention-days': 5
-                    }))
-
-        defer_failure_step = (' (defer failure)' if defer_failure else '')
-        defer_failure_code = (f'''\
- || echo {component_friendly_name} >>{failed_components_fname}'''
-                              if defer_failure else '')
-        steps.append(
-            RunStep(
-                'Build converted ' + component_friendly_name + at_filter_step +
-                defer_failure_step,
-                # convert_project.py sets -output-dir=out.checked as
-                # standard.
-                textwrap.dedent(f'''\
-                    cd {component_dir}
-                    if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-                ''') +
+            if run_locally:
+                # Put a zip file of the stats in a folder that can be consumed
+                # by our existing stats processing scripts that expect a folder
+                # of artifact zips downloaded by GitHub. (When running via
+                # GitHub, the analogous zipping step is performed as part of the
+                # GitHub artifact system.)
                 #
-                (f'cd {component.build_dir}\n'
-                 if component.build_dir is not None else '') +
-                f'{build_converted_cmd}{at_filter_code}{defer_failure_code}\n'))
+                # TODO: Consider changing our stats processing scripts to move
+                # the "extract zips" logic into the GitHub artifact download
+                # step so that when running locally, we can just skip that
+                # step and save the work of zipping and unzipping.
+                all_stats_dir = '${{env.benchmark_conv_dir}}/stats'
+                stats_zip = f'{all_stats_dir}/{perf_artifact_name}.zip'
+                steps.append(
+                    RunStep(
+                        'Save 3c stats of ' + component_friendly_name,
+                        textwrap.dedent(f'''\
+                            cd {component_dir}
+                            mkdir -p {all_stats_dir}
+                            rm -f {stats_zip}
+                            zip {stats_zip} {' '.join(stats_filenames)}
+                        ''')))
+            else:
+                perf_dir_name = "3c_performance_stats/"
+                steps.append(
+                    RunStep(
+                        'Copy 3c stats of ' + component_friendly_name,
+                        textwrap.dedent(f'''\
+                            cd {component_dir}
+                            mkdir {perf_dir_name}
+                            cp {' '.join(stats_filenames)} {perf_dir_name}
+                        ''')))
+                perf_dir = os.path.join(component_dir, perf_dir_name)
+                steps.append(
+                    ActionStep(
+                        'Upload 3c stats of ' + component_friendly_name,
+                        'actions/upload-artifact@v2', {
+                            'name': perf_artifact_name,
+                            'path': perf_dir,
+                            'retention-days': 5
+                        }))
 
-    if defer_failure:
+        if not args.skip_post_conversion_build:
+            defer_failure_step = (' (defer failure)' if defer_failure else '')
+            defer_failure_code = (f'''\
+ || echo {component_friendly_name} >>{failed_components_fname}'''
+                                  if defer_failure else '')
+            steps.append(
+                RunStep(
+                    'Build converted ' + component_friendly_name +
+                    at_filter_step + defer_failure_step,
+                    # convert_project.py sets -output-dir=out.checked as
+                    # standard.
+                    textwrap.dedent(f'''\
+                        cd {component_dir}
+                        if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
+                    ''') +
+                    #
+                    (f'cd {component.build_dir}\n'
+                     if component.build_dir is not None else '') +
+                    f'{build_converted_cmd}{at_filter_code}{defer_failure_code}\n'
+                ))
+
+    if defer_failure and not args.skip_post_conversion_build:
         steps.append(
             RunStep(
                 'Check for deferred post-conversion build failures', f'''\
@@ -680,9 +744,12 @@ if [ -e {failed_components_fname} ]; then
 fi
 '''))
 
-    # We want blank lines between steps but not after the last step of
-    # the last benchmark.
-    out.write('\n'.join(str(s) for s in steps))
+    if run_locally:
+        out.write(''.join(s.format_local() for s in steps))
+    else:
+        # We want blank lines between steps but not after the last step of
+        # the last benchmark.
+        out.write('\n'.join(str(s) for s in steps))
 
 
 @dataclass
@@ -703,17 +770,15 @@ workflow_file_configs = [
                    variants=[Variant(alltypes=False),
                              Variant(alltypes=True)],
                    cron_timestamp="0 5 * * *"),
-    WorkflowConfig(
-        filename="exhaustivestats",
-        friendly_name="Exhaustive testing and Performance Stats",
-        variants=[
-            Variant(alltypes=False),
-            Variant(alltypes=True)
-        ],
-        generate_stats=True),
+    WorkflowConfig(filename="exhaustivestats",
+                   friendly_name="Exhaustive testing and Performance Stats",
+                   variants=[Variant(alltypes=False),
+                             Variant(alltypes=True)],
+                   generate_stats=True),
     WorkflowConfig(
         filename="exhaustiveleastgreatest",
-        friendly_name="Exhaustive testing and Performance Stats (Least and Greatest)",
+        friendly_name=
+        "Exhaustive testing and Performance Stats (Least and Greatest)",
         variants=[
             Variant(alltypes=True,
                     extra_3c_args=['-only-g-sol'],
@@ -741,7 +806,117 @@ workflow_file_configs = [
         generate_stats=True)
 ]
 
-for config in workflow_file_configs:
+
+def generate_benchmark_jobs(out: TextIO, config: WorkflowConfig,
+                            run_locally: bool) -> None:
+    for binfo in benchmarks:
+        if args.benchmarks != [] and binfo.name not in args.benchmarks:
+            continue
+        for expand_macros in (False, True):
+            for variant in config.variants:
+                generate_benchmark_job(out, binfo, expand_macros, variant,
+                                       config.generate_stats, run_locally)
+
+
+parser = argparse.ArgumentParser(
+    description=
+    'Generate GitHub workflows or local scripts to run the 3C benchmark tests.')
+parser.set_defaults(
+    run_locally=False,
+    # Establish these defaults even when not generating a custom local script to
+    # reduce the number of special cases we need elsewhere. An empty list means
+    # all benchmarks or subvariants.
+    benchmarks=[],
+    subvariants=[],
+    skip_post_conversion_build=False)
+subparsers = parser.add_subparsers(
+    # When no subcommand is specified, we generate the GitHub workflows as
+    # always.
+    required=False)
+
+parser_local = subparsers.add_parser(
+    'local',
+    help=('Generate a script to run benchmark(s) locally '
+          'instead of generating all GitHub workflows.'))
+parser_local.set_defaults(run_locally=True)
+
+parser_local.add_argument('--output',
+                          dest='out_fname',
+                          required=True,
+                          help='Filename of the script to be written.')
+
+# Information that we need in order to run benchmarks locally.
+# TODO: Consider the alternative design of generating a script that references
+# environment variables to be set when the script is run?
+parser_local.add_argument('--3c-source-dir',
+                          dest='_3c_source_dir',
+                          required=True,
+                          help=('Path to the 3C source directory '
+                                'containing clang/tools/3c/utils/port_tools.'))
+parser_local.add_argument('--3c-build-dir',
+                          dest='_3c_build_dir',
+                          required=True,
+                          help=('Path to the 3C build or install directory '
+                                'containing bin/3c, bin/clang, etc.'))
+parser_local.add_argument('--checkedc-benchmarks-dir',
+                          dest='checkedc_benchmarks_dir',
+                          required=True,
+                          help='Path to the checkedc-benchmarks directory.')
+parser_local.add_argument(
+    '--work-dir',
+    dest='work_dir',
+    required=True,
+    help=('"Work" directory under which the benchmark code is '
+          'extracted, converted, and built.'))
+parser_local.add_argument(
+    '--use-built-extra-tools',
+    dest='use_built_extra_tools',
+    action='store_true',
+    default=False,
+    help=('For certain auxiliary tools (currently: clang-rename), '
+          'look in the specified 3C build directory instead of on $PATH.'))
+
+# Flags that select what to run.
+parser_local.add_argument('--workflow-config',
+                          dest='workflow_config',
+                          type=str,
+                          required=True,
+                          help='Workflow configuration (e.g., "main") to use.')
+parser_local.add_argument(
+    '--benchmark',
+    dest='benchmarks',
+    action='append',
+    type=str,
+    default=[],
+    help=(
+        'Run only the specified benchmark (e.g., "vsftpd") '
+        'instead of all of them. '
+        'Multiple --benchmark options can be used to run multiple benchmarks.'))
+parser_local.add_argument(
+    '--subvariant',
+    dest='subvariants',
+    action='append',
+    type=str,
+    default=[],
+    help=(
+        'Run only the specified subvariant '
+        '(e.g., "no_expand_macros_no_alltypes") instead of all of them. '
+        'Multiple --subvariant options can be used to run multiple subvariants.'
+    ))
+parser_local.add_argument(
+    '--skip-post-conversion-build',
+    dest='skip_post_conversion_build',
+    action='store_true',
+    default=False,
+    help=('Skip the post-conversion build. This is currently a stopgap to '
+          'avoid having known post-conversion build errors in one job block '
+          'stats generation of subsequent jobs, since the `set -e` is '
+          'currently global; TBD whether we find a better solution soon.'))
+
+args = parser.parse_args()
+
+
+def generate_github_workflow(config: WorkflowConfig) -> None:
     with open(f'.github/workflows/{config.filename}.yml', 'w') as out:
         # format header using workflow name and schedule time.
         formatted_hdr = HEADER.replace('{workflow.name}', config.friendly_name)
@@ -755,8 +930,83 @@ for config in workflow_file_configs:
                                               optional_schedule_trigger)
 
         out.write(formatted_hdr)
-        for binfo in benchmarks:
-            for expand_macros in (False, True):
-                for variant in config.variants:
-                    generate_benchmark_job(out, binfo, expand_macros, variant,
-                                           config.generate_stats)
+        generate_benchmark_jobs(out, config, False)
+
+
+# Calling os.open with mode=0o777 is the easiest way to create an executable
+# file with the default permissions given by the umask or default ACL.
+def executable_file_opener(path: str, flags: int) -> int:
+    return os.open(path, flags, 0o777)
+
+
+def generate_local_script(config: WorkflowConfig) -> None:
+    tmp_out = io.StringIO()
+    tmp_out.write(f'''\
+#!/bin/bash
+# This script was generated by `generate-workflow.py local` but may be manually
+# edited by a user for customization.
+#
+# Workflow configuration name: {config.filename}
+
+# TODO: Make this per-job so if one job fails, the others still run (as in the
+# GitHub workflow)?
+set -e
+trap 'echo >&2 "*** Exiting workflow early due to failed command. ***"' ERR
+''')
+    generate_benchmark_jobs(tmp_out, config, True)
+    script = tmp_out.getvalue()
+
+    def get_extra_tool_path(name: str) -> str:
+        return (os.path.join(local_3c_build_dir, 'bin', name)
+                if args.use_built_extra_tools else name)
+
+    env_replacements = {
+        'actions_repo': os.path.dirname(os.path.realpath(__file__)),
+        'benchmark_tar_dir': local_checkedc_benchmarks_dir,
+        'benchmark_conv_dir': os.path.abspath(args.work_dir),
+        'builddir': local_3c_build_dir,
+        'port_tools': local_port_tools,
+        # Currently, unlike the GitHub workflow, we default to `clang-rename`
+        # rather than `clang-rename-10` when --use-built-extra-tools is off.
+        'clang_rename': get_extra_tool_path('clang-rename')
+    }
+    for k, v in env_replacements.items():
+        script = script.replace('${{env.' + k + '}}', v)
+
+    with open(args.out_fname, 'w', opener=executable_file_opener) as out:
+        out.write(script)
+
+
+if args.run_locally:
+
+    def fatal_error(msg: str) -> NoReturn:
+        sys.exit('Error: ' + msg)
+
+    # Sanity checks that user-specified paths exist. It's much nicer for the
+    # user to get these errors right away so they can fix their
+    # generate-workflow.py flags rather than having something go wrong in the
+    # middle of execution of the generated script. But we might need an option
+    # to skip this validation if users want to generate a script referencing
+    # directories that will be created later.
+    local_3c_build_dir: str = os.path.abspath(args._3c_build_dir)
+    if not os.path.exists(local_3c_build_dir + '/bin/3c'):
+        fatal_error(f'{local_3c_build_dir}/bin/3c does not exist.')
+    local_port_tools: str = (os.path.abspath(args._3c_source_dir) +
+                             '/clang/tools/3c/utils/port_tools')
+    if not os.path.exists(local_port_tools):
+        fatal_error(f'{local_port_tools} does not exist.')
+    local_checkedc_benchmarks_dir: str = args.checkedc_benchmarks_dir
+    if not os.path.exists(local_checkedc_benchmarks_dir):
+        fatal_error(f'{local_checkedc_benchmarks_dir} does not exist.')
+
+    matching_configs = [
+        c for c in workflow_file_configs if c.filename == args.workflow_config
+    ]
+    if len(matching_configs) == 0:
+        fatal_error(f'No such workflow configuration "{args.workflow_config}".')
+    # TODO: Warn the user if a nonexistent --benchmark or --subvariant is
+    # specified? It's nontrivial to get the list of valid subvariant names here.
+    generate_local_script(matching_configs[0])
+else:
+    for config in workflow_file_configs:
+        generate_github_workflow(config)

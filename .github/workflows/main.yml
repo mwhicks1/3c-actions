@@ -21,6 +21,8 @@ env:
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
   branch_for_scheduled_run: "main"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
+  clang_rename: "clang-rename-10"
+  actions_repo: "${{github.workspace}}/depsfolder/actions"
 
 jobs:
 
@@ -117,6 +119,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf vsftpd-3.0.3
           tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
           cd vsftpd-3.0.3
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion"
@@ -143,6 +146,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf vsftpd-3.0.3
           tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
           cd vsftpd-3.0.3
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion"
@@ -159,7 +163,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/vsftpd-3.0.3
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion" -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_vsftpd_expand_macros_no_alltypes:
     name: Test Vsftpd (macro-expanded, no -alltypes)
@@ -170,6 +174,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf vsftpd-3.0.3
           tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
           cd vsftpd-3.0.3
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion"
@@ -197,6 +202,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf vsftpd-3.0.3
           tar -xvzf ${{env.benchmark_tar_dir}}/vsftpd-3.0.3.tar.gz
           cd vsftpd-3.0.3
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion"
@@ -214,7 +220,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/vsftpd-3.0.3
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang -w -ferror-limit=0 -Wno-enum-conversion" -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_Parson_no_expand_macros_no_alltypes:
     name: Test Parson (not macro-expanded, no -alltypes)
@@ -225,6 +231,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf parson
           tar -xvzf ${{env.benchmark_tar_dir}}/parson.tar.gz
           cd parson
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
@@ -251,6 +258,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf parson
           tar -xvzf ${{env.benchmark_tar_dir}}/parson.tar.gz
           cd parson
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
@@ -267,7 +275,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/parson
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_Parson_expand_macros_no_alltypes:
     name: Test Parson (macro-expanded, no -alltypes)
@@ -278,6 +286,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf parson
           tar -xvzf ${{env.benchmark_tar_dir}}/parson.tar.gz
           cd parson
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
@@ -305,6 +314,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf parson
           tar -xvzf ${{env.benchmark_tar_dir}}/parson.tar.gz
           cd parson
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang"
@@ -322,7 +332,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/parson
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_Olden_no_expand_macros_no_alltypes:
     name: Test Olden (not macro-expanded, no -alltypes)
@@ -333,6 +343,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf Olden
           tar -xvzf ${{env.benchmark_tar_dir}}/Olden.tar.gz
           cd Olden
           for i in bh bisort em3d health mst perimeter power treeadd tsp voronoi ; do \
@@ -496,6 +507,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf Olden
           tar -xvzf ${{env.benchmark_tar_dir}}/Olden.tar.gz
           cd Olden
           for i in bh bisort em3d health mst perimeter power treeadd tsp voronoi ; do \
@@ -515,7 +527,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/bh
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bh >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo bh >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert bisort
         run: |
@@ -530,7 +542,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/bisort
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bisort >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo bisort >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert em3d
         run: |
@@ -545,7 +557,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/em3d
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo em3d >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo em3d >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert health
         run: |
@@ -560,7 +572,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/health
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo health >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo health >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert mst
         run: |
@@ -575,7 +587,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/mst
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo mst >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo mst >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert perimeter
         run: |
@@ -590,7 +602,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/perimeter
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo perimeter >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo perimeter >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert power
         run: |
@@ -605,7 +617,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/power
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo power >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo power >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert treeadd
         run: |
@@ -620,7 +632,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/treeadd
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo treeadd >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo treeadd >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert tsp
         run: |
@@ -635,7 +647,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/tsp
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo tsp >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo tsp >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert voronoi
         run: |
@@ -650,7 +662,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/voronoi
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo voronoi >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo voronoi >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Check for deferred post-conversion build failures
         run: |
@@ -669,6 +681,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf Olden
           tar -xvzf ${{env.benchmark_tar_dir}}/Olden.tar.gz
           cd Olden
           for i in bh bisort em3d health mst perimeter power treeadd tsp voronoi ; do \
@@ -842,6 +855,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf Olden
           tar -xvzf ${{env.benchmark_tar_dir}}/Olden.tar.gz
           cd Olden
           for i in bh bisort em3d health mst perimeter power treeadd tsp voronoi ; do \
@@ -862,7 +876,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/bh
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bh >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo bh >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert bisort
         run: |
@@ -878,7 +892,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/bisort
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bisort >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo bisort >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert em3d
         run: |
@@ -894,7 +908,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/em3d
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo em3d >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo em3d >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert health
         run: |
@@ -910,7 +924,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/health
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo health >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo health >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert mst
         run: |
@@ -926,7 +940,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/mst
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo mst >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo mst >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert perimeter
         run: |
@@ -942,7 +956,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/perimeter
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo perimeter >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo perimeter >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert power
         run: |
@@ -958,7 +972,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/power
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo power >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo power >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert treeadd
         run: |
@@ -974,7 +988,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/treeadd
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo treeadd >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo treeadd >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert tsp
         run: |
@@ -990,7 +1004,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/tsp
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo tsp >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo tsp >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Convert voronoi
         run: |
@@ -1006,7 +1020,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/voronoi
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo voronoi >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo voronoi >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/Olden/failed-components-list.txt
 
       - name: Check for deferred post-conversion build failures
         run: |
@@ -1025,6 +1039,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf ptrdist-1.1
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           ( cd yacr2
@@ -1125,6 +1140,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf ptrdist-1.1
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           ( cd yacr2
@@ -1155,7 +1171,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/anagram
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo anagram >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo anagram >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert bc
         run: |
@@ -1169,7 +1185,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/bc
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bc >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo bc >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ft
         run: |
@@ -1183,7 +1199,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ft
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ft >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo ft >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ks
         run: |
@@ -1197,7 +1213,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/ks
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ks >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo ks >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert yacr2
         run: |
@@ -1211,7 +1227,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/yacr2
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo yacr2 >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo yacr2 >>${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Check for deferred post-conversion build failures
         run: |
@@ -1230,6 +1246,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf ptrdist-1.1
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           ( cd yacr2
@@ -1335,6 +1352,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf ptrdist-1.1
           tar -xvzf ${{env.benchmark_tar_dir}}/ptrdist-1.1.tar.gz
           cd ptrdist-1.1
           ( cd yacr2
@@ -1366,7 +1384,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/anagram
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo anagram >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo anagram >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert bc
         run: |
@@ -1381,7 +1399,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/bc
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo bc >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo bc >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ft
         run: |
@@ -1396,7 +1414,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ft
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ft >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo ft >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert ks
         run: |
@@ -1411,7 +1429,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/ks
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo ks >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo ks >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Convert yacr2
         run: |
@@ -1426,7 +1444,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/yacr2
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py || echo yacr2 >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k LOCAL_CFLAGS="-w -ferror-limit=0 -D_ISOC99_SOURCE" 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py || echo yacr2 >>${{env.benchmark_conv_dir}}/expand_macros_alltypes/ptrdist-1.1/failed-components-list.txt
 
       - name: Check for deferred post-conversion build failures
         run: |
@@ -1445,6 +1463,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf libarchive-3.4.3
           tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
           cd libarchive-3.4.3
           cd build
@@ -1476,6 +1495,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf libarchive-3.4.3
           tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
           cd libarchive-3.4.3
           cd build
@@ -1497,7 +1517,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/libarchive-3.4.3
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           cd build
-          ninja -l $(nproc) -k 0 archive 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          ninja -l $(nproc) -k 0 archive 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_libarchive_expand_macros_no_alltypes:
     name: Test LibArchive (macro-expanded, no -alltypes)
@@ -1508,6 +1528,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf libarchive-3.4.3
           tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
           cd libarchive-3.4.3
           cd build
@@ -1540,6 +1561,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf libarchive-3.4.3
           tar -xvzf ${{env.benchmark_tar_dir}}/libarchive-3.4.3.tar.gz
           cd libarchive-3.4.3
           cd build
@@ -1562,7 +1584,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/libarchive-3.4.3
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           cd build
-          ninja -l $(nproc) -k 0 archive 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          ninja -l $(nproc) -k 0 archive 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_lua_no_expand_macros_no_alltypes:
     name: Test Lua (not macro-expanded, no -alltypes)
@@ -1573,11 +1595,12 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf lua-5.4.1
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1605,11 +1628,12 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf lua-5.4.1
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1627,7 +1651,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/lua-5.4.1
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w -ferror-limit=0" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w -ferror-limit=0" linux 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_lua_expand_macros_no_alltypes:
     name: Test Lua (macro-expanded, no -alltypes)
@@ -1638,11 +1662,12 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf lua-5.4.1
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1671,11 +1696,12 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf lua-5.4.1
           tar -xvzf ${{env.benchmark_tar_dir}}/lua-5.4.1.tar.gz
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1694,7 +1720,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/lua-5.4.1
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           sed -i "s/luac_main/main/" src/luac.c
-          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w -ferror-limit=0" linux 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" -k CFLAGS="-w -ferror-limit=0" linux 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_libtiff_no_expand_macros_no_alltypes:
     name: Test LibTiff (not macro-expanded, no -alltypes)
@@ -1705,6 +1731,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf tiff-4.1.0
           tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
           for i in ${{env.benchmark_tar_dir}}/tiff-4.1.0_patches/*; do patch -s -p0 < $i; done
           cd tiff-4.1.0
@@ -1712,7 +1739,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1742,6 +1769,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf tiff-4.1.0
           tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
           for i in ${{env.benchmark_tar_dir}}/tiff-4.1.0_patches/*; do patch -s -p0 < $i; done
           cd tiff-4.1.0
@@ -1749,7 +1777,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1769,7 +1797,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/tiff-4.1.0
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          ninja -l $(nproc) -k 0 tiff 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          ninja -l $(nproc) -k 0 tiff 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_libtiff_expand_macros_no_alltypes:
     name: Test LibTiff (macro-expanded, no -alltypes)
@@ -1780,6 +1808,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf tiff-4.1.0
           tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
           for i in ${{env.benchmark_tar_dir}}/tiff-4.1.0_patches/*; do patch -s -p0 < $i; done
           cd tiff-4.1.0
@@ -1787,7 +1816,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1818,6 +1847,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf tiff-4.1.0
           tar -xvzf ${{env.benchmark_tar_dir}}/tiff-4.1.0.tar.gz
           for i in ${{env.benchmark_tar_dir}}/tiff-4.1.0_patches/*; do patch -s -p0 < $i; done
           cd tiff-4.1.0
@@ -1825,7 +1855,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1846,7 +1876,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/tiff-4.1.0
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          ninja -l $(nproc) -k 0 tiff 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          ninja -l $(nproc) -k 0 tiff 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_zlib_no_expand_macros_no_alltypes:
     name: Test ZLib (not macro-expanded, no -alltypes)
@@ -1857,6 +1887,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf zlib-1.2.11
           tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
           cd zlib-1.2.11
           mkdir build
@@ -1889,6 +1920,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf zlib-1.2.11
           tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
           cd zlib-1.2.11
           mkdir build
@@ -1911,7 +1943,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/zlib-1.2.11
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           cd build
-          ninja -l $(nproc) -k 0 zlib 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          ninja -l $(nproc) -k 0 zlib 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_zlib_expand_macros_no_alltypes:
     name: Test ZLib (macro-expanded, no -alltypes)
@@ -1922,6 +1954,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf zlib-1.2.11
           tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
           cd zlib-1.2.11
           mkdir build
@@ -1955,6 +1988,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf zlib-1.2.11
           tar -xvzf ${{env.benchmark_tar_dir}}/zlib-1.2.11.tar.gz
           cd zlib-1.2.11
           mkdir build
@@ -1978,7 +2012,7 @@ jobs:
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/zlib-1.2.11
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
           cd build
-          ninja -l $(nproc) -k 0 zlib 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          ninja -l $(nproc) -k 0 zlib 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_icecast_no_expand_macros_no_alltypes:
     name: Test Icecast (not macro-expanded, no -alltypes)
@@ -1989,6 +2023,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf icecast-2.4.4
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
           sed -i '/_GNU_SOURCE/d' configure
@@ -2017,6 +2052,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf icecast-2.4.4
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
           sed -i '/_GNU_SOURCE/d' configure
@@ -2035,7 +2071,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/icecast-2.4.4
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_icecast_expand_macros_no_alltypes:
     name: Test Icecast (macro-expanded, no -alltypes)
@@ -2046,6 +2082,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf icecast-2.4.4
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
           sed -i '/_GNU_SOURCE/d' configure
@@ -2075,6 +2112,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf icecast-2.4.4
           tar -xvzf ${{env.benchmark_tar_dir}}/icecast-2.4.4.tar.gz
           cd icecast-2.4.4
           sed -i '/_GNU_SOURCE/d' configure
@@ -2094,7 +2132,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/icecast-2.4.4
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make -j $(nproc) -l $(nproc) --output-sync -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_thttpd_no_expand_macros_no_alltypes:
     name: Test Thttpd (not macro-expanded, no -alltypes)
@@ -2105,6 +2143,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_no_alltypes
+          rm -rf thttpd-2.29
           tar -xvzf ${{env.benchmark_tar_dir}}/thttpd-2.29.tar.gz
           for i in ${{env.benchmark_tar_dir}}/thttpd-2.29_patches/*; do patch -s -p0 < $i; done
           cd thttpd-2.29
@@ -2134,6 +2173,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes
+          rm -rf thttpd-2.29
           tar -xvzf ${{env.benchmark_tar_dir}}/thttpd-2.29.tar.gz
           for i in ${{env.benchmark_tar_dir}}/thttpd-2.29_patches/*; do patch -s -p0 < $i; done
           cd thttpd-2.29
@@ -2153,7 +2193,7 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/no_expand_macros_alltypes/thttpd-2.29
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make CC="${{env.builddir}}/bin/clang -w -ferror-limit=0" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make CC="${{env.builddir}}/bin/clang -w -ferror-limit=0" -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
 
   test_thttpd_expand_macros_no_alltypes:
     name: Test Thttpd (macro-expanded, no -alltypes)
@@ -2164,6 +2204,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_no_alltypes
+          rm -rf thttpd-2.29
           tar -xvzf ${{env.benchmark_tar_dir}}/thttpd-2.29.tar.gz
           for i in ${{env.benchmark_tar_dir}}/thttpd-2.29_patches/*; do patch -s -p0 < $i; done
           cd thttpd-2.29
@@ -2194,6 +2235,7 @@ jobs:
         run: |
           mkdir -p ${{env.benchmark_conv_dir}}/expand_macros_alltypes
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes
+          rm -rf thttpd-2.29
           tar -xvzf ${{env.benchmark_tar_dir}}/thttpd-2.29.tar.gz
           for i in ${{env.benchmark_tar_dir}}/thttpd-2.29_patches/*; do patch -s -p0 < $i; done
           cd thttpd-2.29
@@ -2214,4 +2256,4 @@ jobs:
         run: |
           cd ${{env.benchmark_conv_dir}}/expand_macros_alltypes/thttpd-2.29
           if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-          make CC="${{env.builddir}}/bin/clang -w -ferror-limit=0" -k 2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py
+          make CC="${{env.builddir}}/bin/clang -w -ferror-limit=0" -k 2>&1 | ${{env.actions_repo}}/filter-bounds-inference-errors.py
