@@ -13,7 +13,7 @@ import io
 import os
 import sys
 import textwrap
-from typing import Dict, List, Optional, TextIO, Any
+from typing import Dict, List, NoReturn, Optional, TextIO, Any
 
 
 # To make `WorkflowConfig` definitions more concise, this `Variant` class does
@@ -912,25 +912,18 @@ def generate_local_script(config: WorkflowConfig) -> None:
     script = tmp_out.getvalue()
 
     def get_extra_tool_path(name: str) -> str:
-        return (os.path.join(os.path.abspath(args._3c_build_dir), 'bin', name)
+        return (os.path.join(local_3c_build_dir, 'bin', name)
                 if args.use_built_extra_tools else name)
 
     env_replacements = {
-        'actions_repo':
-            os.path.dirname(os.path.realpath(__file__)),
-        'benchmark_tar_dir':
-            os.path.abspath(args.checkedc_benchmarks_dir),
-        'benchmark_conv_dir':
-            os.path.abspath(args.work_dir),
-        'builddir':
-            os.path.abspath(args._3c_build_dir),
-        'port_tools':
-            os.path.abspath(args._3c_source_dir) +
-            '/clang/tools/3c/utils/port_tools',
+        'actions_repo': os.path.dirname(os.path.realpath(__file__)),
+        'benchmark_tar_dir': local_checkedc_benchmarks_dir,
+        'benchmark_conv_dir': os.path.abspath(args.work_dir),
+        'builddir': local_3c_build_dir,
+        'port_tools': local_port_tools,
         # Currently, unlike the GitHub workflow, we default to `clang-rename`
         # rather than `clang-rename-10` when --use-built-extra-tools is off.
-        'clang_rename':
-            get_extra_tool_path('clang-rename')
+        'clang_rename': get_extra_tool_path('clang-rename')
     }
     for k, v in env_replacements.items():
         script = script.replace('${{env.' + k + '}}', v)
@@ -940,12 +933,32 @@ def generate_local_script(config: WorkflowConfig) -> None:
 
 
 if args.run_locally:
+
+    def fatal_error(msg: str) -> NoReturn:
+        sys.exit('Error: ' + msg)
+
+    # Sanity checks that user-specified paths exist. It's much nicer for the
+    # user to get these errors right away so they can fix their
+    # generate-workflow.py flags rather than having something go wrong in the
+    # middle of execution of the generated script. But we might need an option
+    # to skip this validation if users want to generate a script referencing
+    # directories that will be created later.
+    local_3c_build_dir: str = os.path.abspath(args._3c_build_dir)
+    if not os.path.exists(local_3c_build_dir + '/bin/3c'):
+        fatal_error(f'{local_3c_build_dir}/bin/3c does not exist.')
+    local_port_tools: str = (os.path.abspath(args._3c_source_dir) +
+                             '/clang/tools/3c/utils/port_tools')
+    if not os.path.exists(local_port_tools):
+        fatal_error(f'{local_port_tools} does not exist.')
+    local_checkedc_benchmarks_dir: str = args.checkedc_benchmarks_dir
+    if not os.path.exists(local_checkedc_benchmarks_dir):
+        fatal_error(f'{local_checkedc_benchmarks_dir} does not exist.')
+
     matching_configs = [
         c for c in workflow_file_configs if c.filename == args.workflow_config
     ]
     if len(matching_configs) == 0:
-        sys.exit(
-            f'Error: No such workflow configuration "{args.workflow_config}".')
+        fatal_error(f'No such workflow configuration "{args.workflow_config}".')
     # TODO: Warn the user if a nonexistent --benchmark or --subvariant is
     # specified? It's nontrivial to get the list of valid subvariant names here.
     generate_local_script(matching_configs[0])
