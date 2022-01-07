@@ -935,6 +935,11 @@ def generate_local_script(config: WorkflowConfig) -> None:
 # edited by a user for customization.
 #
 # Workflow configuration name: {config.filename}
+
+# TODO: Make this per-job so if one job fails, the others still run (as in the
+# GitHub workflow)?
+set -e
+trap 'echo >&2 "*** Exiting workflow early due to failed command. ***"' ERR
 ''')
     generate_benchmark_jobs(tmp_out, config, True)
     script = tmp_out.getvalue()
