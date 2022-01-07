@@ -712,26 +712,28 @@ def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
                             'retention-days': 5
                         }))
 
-        defer_failure_step = (' (defer failure)' if defer_failure else '')
-        defer_failure_code = (f'''\
+        if not args.skip_post_conversion_build:
+            defer_failure_step = (' (defer failure)' if defer_failure else '')
+            defer_failure_code = (f'''\
  || echo {component_friendly_name} >>{failed_components_fname}'''
-                              if defer_failure else '')
-        steps.append(
-            RunStep(
-                'Build converted ' + component_friendly_name + at_filter_step +
-                defer_failure_step,
-                # convert_project.py sets -output-dir=out.checked as
-                # standard.
-                textwrap.dedent(f'''\
-                    cd {component_dir}
-                    if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
-                ''') +
-                #
-                (f'cd {component.build_dir}\n'
-                 if component.build_dir is not None else '') +
-                f'{build_converted_cmd}{at_filter_code}{defer_failure_code}\n'))
+                                  if defer_failure else '')
+            steps.append(
+                RunStep(
+                    'Build converted ' + component_friendly_name +
+                    at_filter_step + defer_failure_step,
+                    # convert_project.py sets -output-dir=out.checked as
+                    # standard.
+                    textwrap.dedent(f'''\
+                        cd {component_dir}
+                        if [ -e "out.checked" ]; then cp -r out.checked/* . && rm -r out.checked; fi
+                    ''') +
+                    #
+                    (f'cd {component.build_dir}\n'
+                     if component.build_dir is not None else '') +
+                    f'{build_converted_cmd}{at_filter_code}{defer_failure_code}\n'
+                ))
 
-    if defer_failure:
+    if defer_failure and not args.skip_post_conversion_build:
         steps.append(
             RunStep(
                 'Check for deferred post-conversion build failures', f'''\
@@ -821,11 +823,12 @@ parser = argparse.ArgumentParser(
     'Generate GitHub workflows or local scripts to run the 3C benchmark tests.')
 parser.set_defaults(
     run_locally=False,
-    # An empty list means all benchmarks or subvariants. Establish these
-    # defaults even when not generating a custom local script to reduce the
-    # number of special cases we need elsewhere.
+    # Establish these defaults even when not generating a custom local script to
+    # reduce the number of special cases we need elsewhere. An empty list means
+    # all benchmarks or subvariants.
     benchmarks=[],
-    subvariants=[])
+    subvariants=[],
+    skip_post_conversion_build=False)
 subparsers = parser.add_subparsers(
     # When no subcommand is specified, we generate the GitHub workflows as
     # always.
@@ -900,6 +903,15 @@ parser_local.add_argument(
         '(e.g., "no_expand_macros_no_alltypes") instead of all of them. '
         'Multiple --subvariant options can be used to run multiple subvariants.'
     ))
+parser_local.add_argument(
+    '--skip-post-conversion-build',
+    dest='skip_post_conversion_build',
+    action='store_true',
+    default=False,
+    help=('Skip the post-conversion build. This is currently a stopgap to '
+          'avoid having known post-conversion build errors in one job block '
+          'stats generation of subsequent jobs, since the `set -e` is '
+          'currently global; TBD whether we find a better solution soon.'))
 
 args = parser.parse_args()
 
