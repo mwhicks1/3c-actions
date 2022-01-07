@@ -21,6 +21,7 @@ env:
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
   branch_for_scheduled_run: "main"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
+  clang_rename: "clang-rename-10"
 
 jobs:
 
@@ -1577,7 +1578,7 @@ jobs:
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1609,7 +1610,7 @@ jobs:
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1642,7 +1643,7 @@ jobs:
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1675,7 +1676,7 @@ jobs:
           cd lua-5.4.1
           bear make -j $(nproc) -l $(nproc) --output-sync CC="${{env.builddir}}/bin/clang" CFLAGS="-w -ferror-limit=0" linux
           ( cd src ; \
-            clang-rename-10 -pl -i \
+            ${{env.clang_rename}} -pl -i \
               --qualified-name=main \
               --new-name=luac_main \
               luac.c )
@@ -1712,7 +1713,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1749,7 +1750,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1787,7 +1788,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)
@@ -1825,7 +1826,7 @@ jobs:
           bear ninja -l $(nproc) tiff
           ( cd tools ; \
             for i in *.c ; do \
-              clang-rename-10 -pl -i \
+              ${{env.clang_rename}} -pl -i \
                 --qualified-name=main \
                 --new-name=$(basename -s .c $i)_main $i ; \
             done)

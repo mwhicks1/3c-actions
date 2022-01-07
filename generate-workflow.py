@@ -6,9 +6,12 @@
 # essentially no support for code reuse. :(
 
 from abc import ABC, abstractmethod
+import argparse
 import dataclasses
 from dataclasses import dataclass
+import io
 import os
+import sys
 import textwrap
 from typing import Dict, List, Optional, TextIO, Any
 
@@ -274,7 +277,7 @@ benchmarks = [
         build_cmds=textwrap.dedent(f'''\
         bear {make_checkedc} CFLAGS="{common_cflags}" linux
         ( cd src ; \\
-          clang-rename-10 -pl -i \\
+          ${{{{env.clang_rename}}}} -pl -i \\
             --qualified-name=main \\
             --new-name=luac_main \\
             luac.c )
@@ -299,7 +302,7 @@ benchmarks = [
         bear {ninja_std} tiff
         ( cd tools ; \\
           for i in *.c ; do \\
-            clang-rename-10 -pl -i \\
+            ${{{{env.clang_rename}}}} -pl -i \\
               --qualified-name=main \\
               --new-name=$(basename -s .c $i)_main $i ; \\
           done)
@@ -382,6 +385,7 @@ env:
   benchmark_conv_dir: "${{github.workspace}}/benchmark_conv"
   branch_for_scheduled_run: "main"
   port_tools: "${{github.workspace}}/depsfolder/checkedc-clang/clang/tools/3c/utils/port_tools"
+  clang_rename: "clang-rename-10"
 
 jobs:
 
@@ -494,6 +498,10 @@ class Step(ABC):
                 textwrap.indent(self.format_body(), 2 * ' '))
         return textwrap.indent(step, 6 * ' ')
 
+    @abstractmethod
+    def format_local(self) -> str:
+        raise NotImplementedError
+
 
 @dataclass
 class RunStep(Step):
@@ -501,6 +509,9 @@ class RunStep(Step):
 
     def format_body(self) -> str:
         return 'run: |\n' + textwrap.indent(self.run, 2 * ' ')
+
+    def format_local(self) -> str:
+        return f'\n## {self.name}\n{self.run}'
 
 
 @dataclass
@@ -516,16 +527,20 @@ class ActionStep(Step):
             with:
         ''') + textwrap.indent(formatted_args, 2 * ' '))
 
+    def format_local(self) -> str:
+        # This is good enough for workflows that don't generate stats. We'll
+        # figure out later how to handle stats locally.
+        raise NotImplementedError(
+            "ActionStep currently isn't supported locally.")
+
 
 def ensure_trailing_newline(s: str) -> str:
     return s + '\n' if s != '' and not s.endswith('\n') else s
 
 
-def generate_benchmark_job(out: TextIO,
-                           binfo: BenchmarkInfo,
-                           expand_macros: bool,
-                           variant: Variant,
-                           generate_stats: bool = False) -> None:
+def generate_benchmark_job(out: TextIO, binfo: BenchmarkInfo,
+                           expand_macros: bool, variant: Variant,
+                           generate_stats: bool, run_locally: bool) -> None:
     # Check if this benchmark is allowed for the given varient
     if not binfo.is_allowed(variant):
         return
@@ -570,9 +585,14 @@ def generate_benchmark_job(out: TextIO,
  2>&1 | ${{github.workspace}}/depsfolder/actions/filter-bounds-inference-errors.py'''
                       if variant.alltypes else '')
 
-    # The blank line below is important: it gets us blank lines between jobs
-    # without a blank line at the very end of the workflow file.
-    out.write(f'''\
+    if run_locally:
+        # Add a blank line before each job, whether it is preceded by another
+        # job or the file header.
+        out.write(f'\n# Test {binfo.friendly_name} ({subvariant_friendly})\n')
+    else:
+        # The blank line below is important: it gets us blank lines between jobs
+        # without a blank line at the very end of the workflow file.
+        out.write(f'''\
 
   test_{binfo.name}_{subvariant_name}:
     name: Test {binfo.friendly_name} ({subvariant_friendly})
@@ -688,9 +708,12 @@ if [ -e {failed_components_fname} ]; then
 fi
 '''))
 
-    # We want blank lines between steps but not after the last step of
-    # the last benchmark.
-    out.write('\n'.join(str(s) for s in steps))
+    if run_locally:
+        out.write(''.join(s.format_local() for s in steps))
+    else:
+        # We want blank lines between steps but not after the last step of
+        # the last benchmark.
+        out.write('\n'.join(str(s) for s in steps))
 
 
 @dataclass
@@ -747,7 +770,65 @@ workflow_file_configs = [
         generate_stats=True)
 ]
 
-for config in workflow_file_configs:
+
+def generate_benchmark_jobs(out: TextIO, config: WorkflowConfig,
+                            run_locally: bool) -> None:
+    for binfo in benchmarks:
+        for expand_macros in (False, True):
+            for variant in config.variants:
+                generate_benchmark_job(out, binfo, expand_macros, variant,
+                                       config.generate_stats, run_locally)
+
+
+parser = argparse.ArgumentParser(
+    description=
+    'Generate GitHub workflows or local scripts to run the 3C benchmark tests.')
+parser.set_defaults(run_locally=False)
+subparsers = parser.add_subparsers(
+    # When no subcommand is specified, we generate the GitHub workflows as
+    # always.
+    required=False)
+
+parser_local = subparsers.add_parser(
+    'local',
+    help=('Generate a script to run the benchmarks locally '
+          'instead of a GitHub workflow.'))
+parser_local.set_defaults(run_locally=True)
+# Information that we need in order to run benchmarks locally.
+# TODO: Consider the alternative design of generating a script that references
+# environment variables to be set when the script is run?
+parser_local.add_argument('--3c-source-dir',
+                          dest='_3c_source_dir',
+                          required=True,
+                          help=('Path to the 3C source directory '
+                                'containing clang/tools/3c/utils/port_tools.'))
+parser_local.add_argument('--3c-build-dir',
+                          dest='_3c_build_dir',
+                          required=True,
+                          help=('Path to the 3C build or install directory '
+                                'containing bin/3c, bin/clang, etc.'))
+parser_local.add_argument('--checkedc-benchmarks-dir',
+                          dest='checkedc_benchmarks_dir',
+                          required=True,
+                          help='Path to the checkedc-benchmarks directory.')
+parser_local.add_argument(
+    '--work-dir',
+    dest='work_dir',
+    required=True,
+    help=('"Work" directory under which the benchmark code is '
+          'extracted, converted, and built.'))
+parser_local.add_argument(
+    '--use-built-extra-tools',
+    dest='use_built_extra_tools',
+    action='store_true',
+    default=False,
+    help=('For certain auxiliary tools (currently: clang-rename), '
+          'look in the specified 3C build directory instead of on $PATH.'))
+
+args = parser.parse_args()
+
+
+def generate_github_workflow(config: WorkflowConfig) -> None:
     with open(f'.github/workflows/{config.filename}.yml', 'w') as out:
         # format header using workflow name and schedule time.
         formatted_hdr = HEADER.replace('{workflow.name}', config.friendly_name)
@@ -761,8 +842,51 @@ for config in workflow_file_configs:
                                               optional_schedule_trigger)
 
         out.write(formatted_hdr)
-        for binfo in benchmarks:
-            for expand_macros in (False, True):
-                for variant in config.variants:
-                    generate_benchmark_job(out, binfo, expand_macros, variant,
-                                           config.generate_stats)
+        generate_benchmark_jobs(out, config, False)
+
+
+# Calling os.open with mode=0o777 is the easiest way to create an executable
+# file with the default permissions given by the umask or default ACL.
+def executable_file_opener(path: str, flags: int) -> int:
+    return os.open(path, flags, 0o777)
+
+
+def generate_local_script(config: WorkflowConfig) -> None:
+    tmp_out = io.StringIO()
+    tmp_out.write(f'''\
+#!/bin/bash
+# This script was generated by `generate-workflow.py local`.
+''')
+    generate_benchmark_jobs(tmp_out, config, True)
+    script = tmp_out.getvalue()
+
+    def get_extra_tool_path(name: str) -> str:
+        return os.path.join(args._3c_build_dir, 'bin',
+                            name) if args.use_built_extra_tools else name
+
+    env_replacements = {
+        'benchmark_tar_dir': args.checkedc_benchmarks_dir,
+        'benchmark_conv_dir': args.work_dir,
+        'builddir': args._3c_build_dir,
+        'port_tools': args._3c_source_dir + '/clang/tools/3c/utils/port_tools',
+        # Currently, unlike the GitHub workflow, we default to `clang-rename`
+        # rather than `clang-rename-10` when --use-built-extra-tools is off.
+        'clang_rename': get_extra_tool_path('clang-rename')
+    }
+    for k, v in env_replacements.items():
+        script = script.replace('${{env.' + k + '}}', v)
+
+    with open(f'{config.filename}-local.sh', 'w',
+              opener=executable_file_opener) as out:
+        out.write(script)
+
+
+for config in workflow_file_configs:
+    if args.run_locally:
+        if config.generate_stats:
+            sys.stderr.write(f'Warning: Skipping {config.filename} because '
+                             'stats generation is not yet supported.\n')
+        else:
+            generate_local_script(config)
+    else:
+        generate_github_workflow(config)
